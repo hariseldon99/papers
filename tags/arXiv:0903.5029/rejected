@@ -1,0 +1,203 @@
+Rejected from J Phys A:
+Rejection Notice (with my added commentary)
+ 
+ Ref: B/318253/PAP/230468
+ 
+ Dear Dr Roy
+ 
+ TITLE: Time-of-flight signatures of two bosons in a double well
+ AUTHORS: Dr A Roy et al
+ 
+ Your paper submitted to Journal of Physics B: Atomic, Molecular & Optical
+ Physics has now been refereed and the referee report(s) are attached.
+ 
+ I am sorry to tell you that the referee(s) do not feel that your paper is
+ of high enough interest or significance for inclusion in Journal of Physics
+ B: Atomic, Molecular & Optical Physics as it does not make a sufficient
+ contribution to the advancement of the subject. Your paper has therefore
+ been withdrawn from consideration.
+ 
+
+===Commentary: Yeah. Upon some reflection, I wouldn't publish this shit either.
+
+
+ I would like to thank you for your interest in Journal of Physics B:
+ Atomic, Molecular & Optical Physics.
+ 
+ Yours sincerely
+ 
+ Christopher Mooney
+ Publishing Administrator
+ Journal of Physics B: Atomic, Molecular & Optical Physics
+ 
+ Publishing Team
+ Christopher Mooney - Publishing Administrator
+ Alice Malhador and Julia Dickinson - Publishers, Miranda Addey - Publishing
+ Editor
+ Adrian Corrigan - Production Editor
+ 
+ Contact Details
+ E-mail: jphysb@iop.org 
+ Fax: +44 (0) 117 9200663
+ 
+ 
+ Article under review for Journal of Physics B: Atomic, Molecular & Optical
+ Physics
+ Time-of-flight signatures of two bosons in a double well - Dr A Roy et al
+ ID: B/318253/PAP
+ SECOND REFEREE'S REPORT
+ ============================
+ In this work the authors calculate the eigensystem of a system of
+ two bosons held in a double-well potential, and then make an approximate
+ treatment of what the time of flight images of some of these states
+ would look like. This would correspond to an experimental procedure
+ in which such a system is excited by STIRAP from the ground state to
+ a particular higher level, which is then imaged using conventional
+ TOF fluoresence.
+ 
+ Although this should be a quite straightforward subject to tackle, after
+ reading the paper I am not sure what the authors' objectives were, and
+ still
+ less, if they actually managed to achieve them. The abstract speaks
+ of understanding the "chaotic dynamics of coherent quantum controlled
+ excitations of trapped bosons", but it is unclear to me how chaos enters
+ the picture. 
+
+===Commentary: Perhaps I should have emphasized that he should RTFP the double well paper. I think I did. 
+===Commentary: Although Reichl DID point out that the "chaos" only enters in a VERY indirect way. Perhaps one can remove all mention of chaos, STIRAP, or anything  from this paper, since it's not central.
+
+It is quite clear that altering the interaction strength
+ will cause the system to evolve from a single particle picture to a
+ strongly correlated (Tonks) state. As a result the form of the
+ eigenfunctions
+ will change, and so the TOF images will also alter. But I do not see
+ that the TOF images presented in the paper really convincingly distinguish
+ between the two regimes. 
+
+
+===Commentary: There was en error in the earlier versions of the numerics (since corrected). The error had inadvertently made a clearer difference betwn the sp and tonks regimes. After correction, the distinction is more subtle (the sd of the tof dist is higher for the tonks regime). Plotting in a semi-log scale will make the Fermi-ish nature of the distribution more clear.
+
+As the authors also do not model the STIRAP
+ process itself, but just directly treat the eigenstates, I do not see
+ why their results say anything about dynamical processes in general, or
+ chaos in particular.
+ 
+ I found the material in the Introduction to be quite confused, and to
+ give a general impression of a lack of attention to detail. In the first
+ line the authors write that cold bosonic systems have received
+ considerable attention over the past three decades. I would say that
+ the attention really escalated in the mid 1990s with advances in laser
+ cooling, making the timespan more like one decade, which is supported by
+ the dates of Refs.1-4. 
+
+===Commentary: This seems like a valid criticism. Good thing I didn't put "three decades" in my dissertation, or in any other paper (phew). However, I was trying to convey that cold atom research goes back to all that Balytkin and Letokhov stuff back in the 70s. Maybe I should have cited them too.
+
+The authors then mention "quantum many-body
+ culling", while citing Ref.5, without explaining what it is. 
+
+===Commentary:Drat! Missed that!
+
+
+The next sentence then
+ repeats the same information, while citing Ref.7. The second paragraph
+ is equally confusing. It is my impression that random matrix theory treats
+ the statistical properties of a large number of energy levels, and has
+ little to say about the presence of individual crossings or avoided
+ crossings in the Floquet spectrum. The paper is largely concerned with
+ a handful of low-lying eigenstates of the system and I do not
+ see a priori why they should be connected with the chaotic properties
+ of the underlying classical system.
+
+
+===Commentary: In this case, reviewer is dead wrong. There is a clear correlation between statistical properties of energy levels, avoided crossings, and classical chaos. See our double well paper, Ben's papers, and Reichl's book on Transitions to Chaos for further information.
+ 
+
+ The discussion given in Section 2 and the first part of Section 3 is
+ adequate, but from page 10 I lose the thread of the authors' argument.
+ By numerical techniques the authors obtain the low-lying eigenstates
+ of the system, and they wish to investigate how this is revealed in
+ time of flight images Surely this could also be done directly by numerical
+ means? 
+
+===Commentary: Sure. So can any doable problem. What's his point, anyways?
+
+
+Instead it appears that the eigenfunctions are parameterized by
+ set of overlapping Gaussians, each centered on a peak in the distribution.
+ The authors do not say why they adopt this procedure, and in truth I
+ do not see why it gives any advantage; the algebraic results that they give
+ are sufficiently complicated that it is not particularly simple to
+ derive any kind of general behavior.
+
+===Commentary: The reviewer doesn't know distribution theory, apparently. Perhaps I should generalize the treatment using formal expressions of tempered distributions. See Tulsi Dass's book for this.
+ 
+ For this reason I am not sure what to make of Fig.5, and the authors give
+ little commentary on it. It would appear that higher excited states
+ give distributions with more oscillations. Is that the information content
+ of the figure? I also note that in the caption it is stated that "only
+ the positive half" of the distribution is shown, but in my copy both
+ negative and positive halves are plotted.
+ 
+===Commentary: Oops.
+
+ Fig.6 is discussed in more detail, and the authors claim that "the number
+ of distinct oscillations correpond to the number of distinct pairs of
+ peaks seen in the wavefunctions". This is at least a quantitative
+ statement,
+ but given that the distributions were calculated by first locating the
+ positions of the peaks of the wavefunctions, it does not seem to constitute
+ an
+ independent test of this statement. For this, it would be necessary
+ to fully calculate the time of flight image, and then use the peak
+ criterion
+ to analyse the structure. I also find the penultimate paragraph of this
+ section to be deeply unconvincing. As far as I can see, the authors simply
+ compute what the time of flight image of |E4> and |E7> are, and so
+ details of the process that created them ("crossing or avoiding a chaos
+ assisted adiabatic passage") would seem to be irrelevant. 
+
+
+===Commentary: Unfortunately, reviewer is right. This is the paper's greatest weakness, and deems it unworthy of publication :-(.
+
+Possibly I simply
+ do not see what the authors are trying to argue here. Explaining that
+ "the extra oscillation in Fig.6c compared to Fig.6b" to be caused by chaos
+ in the underlying classical dynamics definitely requires more explanation
+ and/or analysis.
+
+===Commentary: Is there any other way to go to this state?
+ 
+ In summary, I do not believe that the paper is publishable in its current
+ form. The results are presented in a rather confusing way, and I do not
+ see that they support the authors' conclusions. In particular, I do not see
+ how chaos plays a role in determining the TOF images.
+ 
+ 
+ Article under review for Journal of Physics B: Atomic, Molecular & Optical
+ Physics
+ Time-of-flight signatures of two bosons in a double well - Dr A Roy et al
+ ID: B/318253/PAP
+ FIRST REFEREE'S REPORT
+ ============================
+ The authors consider two interacting bosons in a double-well potential.
+ They
+ find eigenstates of the system by numerical diagonalization of the
+ Hamiltonian
+ and perform an analysis of time of flight behavior of two bosons.
+ 
+ In my opinion the manuscript presents results which can constitute
+ exercises
+ for advanced students but there is little that can be considered as a high
+ quality research deserved to be published in a scientific journal.
+
+ In Sec.3 the authors show analytical analysis of the time-of-flight
+ effects. In
+ eq.(16) values of a_i are unknown. In Sec.4 they describe results of
+ numerical
+ simulations but they do not present any test of the analytical predictions
+ shown in Sec.3.
+ 
+ I do not recommend the manuscript for publication in JPB.
+
+
+===Commentary: Overall, the reviewer's response is an expected one. I wasn't expecting acceptance on account of the papers' most glaring weakness. It's basically just a witty little problem that Mark Raizen told me to do on a whim (then changed his mind).

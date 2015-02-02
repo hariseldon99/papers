@@ -1,0 +1,829 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{bera}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{empheq}
+\usepackage{dsfont}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1.0in]{geometry}
+\usepackage[square, comma, numbers, sort&compress]{natbib}
+
+\newcommand{\shellcmd}[1]{\\\indent\indent\texttt{\footnotesize\$ #1}\\}
+
+% Command "alignedbox{}{}" for a box within an align environment
+% Source: http://www.latex-community.org/forum/viewtopic.php?f=46&t=8144
+\newlength\dlf  % Define a new measure, dlf
+\newcommand\alignedbox[2]{
+% Argument #1 = before & if there were no box (lhs)
+% Argument #2 = after & if there were no box (rhs)
+&  % Alignment sign of the line
+{
+\settowidth\dlf{$\displaystyle #1$} 
+    % The width of \dlf is the width of the lhs, with a displaystyle font
+\addtolength\dlf{\fboxsep+\fboxrule} 
+    % Add to it the distance to the box, and the width of the line of the box
+\hspace{-\dlf} 
+    % Move everything dlf units to the left, so that & #1 #2 is aligned under #1 & #2
+\boxed{#1 #2}
+    % Put a box around lhs and rhs
+}
+}
+
+%opening
+\title{Algorithm for periodic quantum dynamics of a random Ising chain}
+\author{Analabha Roy}
+
+\begin{document}
+
+\maketitle
+
+\section{\sc Introduction}
+\label{sec:intro}
+This algorithm integrates the dynamics of the following Ising model
+\begin{equation} \label{H_OBC}
+H(t) = - \alpha J \sum_i^{L-1}  J_i \left(c^{\dagger}_i c^{\dagger}_{i+1} + c^{\dagger}_i c_{i+1}  + {\rm h.c.}\right) 
+    - 2 \sum_i^{L} \bigg\{h(t)+\alpha h_i\bigg\} c^{\dagger}_i c_i \;,
+\end{equation}
+where $h(t)$ can be $h_0\cos{\omega t}$ or $h_0 \left(t/\tau\right)$ as in~\cite{isingrand}. The quantities $J_i$ and $h_i$ are random numbers, either uniform in the range $(-\sigma,\sigma)$, or Gaussian with a standard deviation of $\sigma$. The Hamiltonian can be written as a sum of the time-driven Ising Hamiltonian $ H_D(t)$ and a disordered Ising Hamiltonian whose contribution is controlled by a weak perturbative term $\alpha$. Thus,
+\begin{eqnarray}
+H(t)&=& H_D(t)+\alpha H_R,\nonumber \\
+H_D(t) &=& - 2 h(t)\sum_i^{L}c^{\dagger}_i c_i,\nonumber \\
+H_R &=& -J\sum_i^{L}  J_i \left(c^{\dagger}_i c^{\dagger}_{i+1} + c^{\dagger}_i c_{i+1}  + {\rm H.c.}\right) - 2 \sum_i^{L}h_i c^{\dagger}_i c_i.
+\end{eqnarray}
+The object is to do a general study of the model dynamics, and investigate the dynamics of an arbitrary initial state when $H_D(t)$ is at resonance and exotically freezes the unperturbed Hamiltonian~\cite{arnab1}. The full model can, via Jordan Wigner Transformation, be mapped to the dynamics below~\cite{isingrand}
+\begin{empheq} [box=\fbox]{align}
+\label{BdG_tdep:eqn}
+i\frac{d}{dt}u_{i\mu}(t) &=  
+{2} \sum_{j=1}^{L} \left[A_{i,j}(t)u_{j\mu}(t)+B^o_{i,j}(t)v_{j\mu}(t) \right] 
+\nonumber \\
+i\frac{d}{dt}v_{i\mu}(t) \!\! &= 
+-{2}\sum_{j=1}^{L} \left[A_{i,j}(t)v_{j\mu}(t)+B^o_{i,j}(t)u_{j\mu}(t) \right].
+\end{empheq}
+Here $A$ and $B^o$ are real $L\times L$ matrices. The matrix $A=A^d(t)+A^o$, where $A^d_{i,j}(t)=-\left[h(t)+\alpha h_i\right]\delta_{i,j}$ is diagonal. The
+non-zero elements of $A^o$ and $B^o$ are given by $A^o_{i,i+1}=A^o_{i+1,i}=-\alpha J J_i /2$, $B^o_{i,i+1}=-B^o_{i+1,i}=-\alpha J J_i/2$. Furthermore, the system state is characterized by two \textit{complex} $L\times L$ matrices $u$ and $v$, whose columns are the $L$-dimensional vectors $u_\mu$ and $v_\mu$ for $\mu=1,\dots,L$. Note that, for $\alpha=0.0$, the system is perfectly ordered and evolves in time as a driven Ising model along the lines of~\cite{arnab1}. However, there is a factor of $2$ difference in the amplitudes from~\cite{arnab1}. Thus, exotic freezing in our model occurs when the following resonance condition is met
+\begin{equation}
+\label{eq:freezing}
+\mathcal{J}_0(\eta)=0,
+\end{equation}
+for periodic driving with $h(t)=h_0 \cos{\omega t}$. Here, $\eta\equiv {4h_0}/{\omega}$, and $\mathcal{J}_0(x)$ is the zeroth order Bessel Function, and arises from the dominant term in the Fourier series expansion for $|\psi(t)\rangle = \exp{\left[-i\int^t_0 \mathrm{d}\tau\; H(\tau)\right]}|\psi(0)\rangle$ in the instantaneous rest frame of the drive signal~\cite{arnab1}.
+
+We now discuss setting the initial conditions. At $t=0$, we define the invertible transformation
+\begin{eqnarray}
+\label{eq:gammadef}
+\gamma_\mu &\equiv& \sum^L_{j=1} \left(u^\ast_{j\mu}c_j+v^\ast_{j\mu}c^\dagger_j\right), \nonumber \\
+c_i &=& \sum^L_{\mu=1} \left(u_{i\mu}\gamma_\mu+v^\ast_{i\mu}\gamma^\dagger_\mu\right),
+\end{eqnarray}
+such that the state is given by $|\psi(0)\rangle \sim \prod_\mu \gamma_\mu|0\rangle$. In general, the operator $\gamma_\nu$ annihilates this state, and so represents the vacuum of the $\gamma$ particles. The $u_{ij}$ and $v_{ij}$ can be chosen to diagonalize the Hamiltonian at $t=0$, in which case the $\gamma_\nu$s are Boglon quasiparticles. \textbf{In general, we are we are not doing so, although this is what was done in}~\cite{isingrand}. The dynamics in eqns~\ref{BdG_tdep:eqn} continues this transformation in time, thus
+\begin{equation}
+\label{eq:gammat}
+\gamma_\mu(t) \equiv \sum^L_{j=1} \bigg[u^\ast_{j\mu}(t)c_j+v^\ast_{j\mu}(t)c^\dagger_j\bigg].
+\end{equation}
+In the Schr\"odinger picture, the state of the system can be said to evolve as 
+\begin{eqnarray}
+\label{eq:psit}
+|\psi(t)\rangle  &=&   \frac{1}{\sqrt{n(t)}}\ \prod_i \gamma_i(t)|0\rangle,\nonumber \\
+n(t)           &\equiv&  \langle 0 |\prod_j \gamma^\dagger_j(t)\gamma_j(t)|0\rangle.
+\end{eqnarray}
+We now define the matrices $u(t)$ and $v(t)$ to encapsulate the coefficients $u_{\mu\nu}(t)$ and $v_{\mu\nu}(t)$. In addition, we go to the $SU(2L)$ representation and write the state of the system in terms of Nambu spinors in that space. Thus,
+\begin{equation}
+\label{eq:nambu:spinors}
+\begin{array}{lcrcr}
+ \Psi \equiv \begin{bmatrix}
+            c_1\\
+            c_2 \\
+            \vdots \\
+            c_L\\
+            c^\dagger_1\\
+            c^\dagger_2 \\
+            \vdots\\
+            c^\dagger_L
+           \end{bmatrix} & , & \Gamma(t) \equiv \begin{bmatrix}
+            \gamma_1(t)\\
+            \gamma_2 (t)\\
+            \vdots \\
+            \gamma_L(t)\\
+            \gamma^\dagger_1(t)\\
+            \gamma^\dagger_2 (t)\\
+            \vdots\\
+            \gamma^\dagger_L(t)
+           \end{bmatrix} & . &
+           \end{array}
+\end{equation}
+The solution can be written in terms of these spinors as
+\begin{eqnarray}
+\label{eq:spinors}
+\Gamma(t) &   =  & U^\dagger(t) \Psi,\nonumber \\
+U(t)      &\equiv& \begin{bmatrix}         
+		    u(t) & v^\ast(t)\\
+		    v(t) & u^\ast(t)
+		    \end{bmatrix}.
+\end{eqnarray}
+In addition, the Hamiltonian
+\begin{eqnarray}
+\label{eq:hst}
+H(t)   &  =   & \Psi^\dagger H^S(t) \Psi,\nonumber \\
+H^S(t) &\equiv& \begin{bmatrix}
+                 A(t) & B(t)\\
+                 -B(t) & -A(t)
+                \end{bmatrix},
+\end{eqnarray}
+Unitary evolution and canonicality demands that $\{\gamma_\mu(t),\gamma^\dagger_\nu(t)\}=\delta_{\mu\nu},\{\gamma_\mu(t),\gamma_\nu(t)\}=\{\gamma^\dagger_\mu(t),\gamma^\dagger_\nu(t)\}=0$. Thus, from eqns~\ref{eq:gammat}, we get
+\begin{eqnarray}
+\label{eq:fermionicgamma}
+u^\dagger(t) u(t) + v^\dagger(t) v(t) &=& \mathds{1},\nonumber \\
+v^T(t)u(t)+u^T(t)v(t) &=& 0.
+\end{eqnarray}
+More generally, if we define the propagator matrices
+\begin{eqnarray}
+\alpha(t_1,t_2) &\equiv& v^T(t_1) \ u(t_2) + u^T(t_1) \ v(t_2),\nonumber \\
+\beta(t_1,t_2)  &\equiv& u^\dagger(t_1) \ u(t_2) + v^\dagger(t_1) \ v(t_2),
+\end{eqnarray}
+then $\alpha(t,t)=0$, $\beta(t,t)=\mathds{1}$ $\forall t$. We can use these propagator matrices to write down the basis transformation of $\gamma_\mu(t)$ from the elementary fermions $c_i,c^\dagger_i$ to the emergent fermions $\gamma_\mu,\gamma^\dagger_\mu$. Using eqs~\ref{eq:gammat} and~\ref{eq:gammadef}, this yields
+\begin{equation}
+\label{eq:emergentbasis}
+\gamma_\mu(t) = \beta^{\ }_{\mu\nu}(t,0) \ \gamma_\nu + \alpha^\ast_{\nu\mu}(0,t) \ \gamma^\dagger_\nu. 
+\end{equation}
+
+Finally, we discuss setting initial conditions. Any initial condition we choose must satisfy the conditions in eq~\ref{eq:fermionicgamma} at $t=0$. If we desire random initial conditions, one way is to keep $u=0$ and set $v$ to be a random unitary matrix. Random unitary matrices can be generated by creating a random matrix and performing Gram-Schmidt orthonormalization on its columns, effectively rotating the unit matrix by random angles. The GNU Scientific Library~\cite{galassi:gsl} contains routines for the QR decomposition of a matrix, where the matrix Q is unitary and  R is upper triangular. Building a random matrix, performing the QR decomposition and unpacking the matrix Q will yield the orthonormalized form of the random matrix. The relevant routines can be found in~\cite{gsl:qrdecomp}. However, this state does not appear to be sufficiently different from the classical ground state to be of much use, since the only randomness is in the phases. An alternative option is to start from the classical 
+ground state viz $|\psi(0)\rangle = \prod_i c^\dagger_i |0\rangle$. From 
+eq~\ref{eq:gammadef} and~\ref{eq:psit}, this can be done by setting $u(0)=0$,$v(0)=\mathds{1}$. Another choice is the Greenberger–Horne–Zeilinger (GHZ) state $|\psi(0)\rangle = \frac{1}{\sqrt{2}}\ \left(1+\prod_i c^\dagger_i\right)|0\rangle$. This can be set by setting  $h_0=0,\alpha= J_i=h_i=1$ in the Hamiltonian in eq~\ref{H_OBC} and diagonalizing it. The ground state of the ordered Ising model is $2$-fold degenerate, and numerical diagonalization routines select the equal superposition of the canonical basis states in the degenerate subspace as the eigenstate. In this case, that is just the GHZ state. This is accomplished by formulating $H^S(0)$ using eq~\ref{eq:hst} with $h_0=0,\alpha= J_i=h_i=1$ and diagonalizing it. This involves solving for $L$ eigenvalues $\epsilon_\mu$ such that
+\begin{equation}
+H^S(0)|\phi_\mu\rangle  = \epsilon_\mu |\phi_\mu\rangle,
+\end{equation}
+with ground state energy of $-\sum_\mu \epsilon_\mu$. The structure of $H^S$ in eq~\ref{eq:hst} indicates that if the eigenvalue  $\epsilon_\mu$ has an eigenvector $|\phi_\mu\rangle$, then the  eigenvalue  $-\epsilon_\mu$ has an eigenvector $|\phi^\ast_\mu\rangle$, where
+\begin{eqnarray}
+|\phi_\mu \rangle &=& \begin{pmatrix}
+        u_\mu \\
+	v_\mu
+       \end{pmatrix},\nonumber \\
+|\phi^\ast_\mu \rangle &=& \begin{pmatrix}
+        v^\ast_\mu \\
+	u^\ast_\mu
+       \end{pmatrix}.
+\end{eqnarray}
+Here, $u_\mu$, $v_\mu$ are $L-$ dimensional vectors that form the columns of the matrices $u(0)$ and $v(0)$ respectively. Thus, the matrix $U_d$ that diagonalizes $H^S (0)$ can be constructed as
+\begin{equation}
+U_d = \begin{bmatrix}
+       u(0) & v^\ast(0)\\
+       v(0) & u^\ast(0)
+      \end{bmatrix}.
+\end{equation}
+Thus, once $U_d$ is obtained numerically, the submatrices $u(0)$ and $v(0)$ can be extracted.
+
+\section{Calculation of Dynamical Responses to the Drive}
+\label{sec:responses}
+We shall now use these results to obtain expressions for the measurable responses of the system as it evolves in time, namely the magnetization (mapped to the Fermion density after the Jordan Wigner Transformation), and the autocorrelations of the system. 
+
+\subsection{Magnetization}
+\label{subsec:magcalc}
+The magnetization per site can be shown via Jordan Wigner transformation~\cite{arnab1} to be
+\begin{equation}
+\label{eq:magdef}
+m(t)\equiv -1 + \frac{2}{L}\sum^L_{i=1} \langle \psi(0) | c^\dagger_{i,H} (t) c_{i,H}(t) |\psi(0)\rangle,
+\end{equation}
+where the operators 
+\begin{equation}
+\label{eq:cit}
+c_{i,H}(t)\equiv \sum^L_{\mu=1} \left[u_{i\mu}(t)\gamma_\mu+v^\ast_{i\mu}(t)\gamma^\dagger_\mu\right],
+\end{equation}
+are in the Heisenberg picture, and $|\psi(0)\rangle$ is the initial state at $t=0$. Note that the number operator is NOT conserved by the Hamiltonian in eq~\ref{H_OBC}. Equation~\ref{eq:magdef} can be expanded using eq~\ref{eq:cit} to yield
+\begin{eqnarray}
+\label{eq:magops}
+ m(t) &=& -1+2\langle\psi(0)|\hat{\rho}(t)|\psi(0)\rangle,\nonumber \\
+ \hat{\rho}(t) &=& \frac{1}{L}\sum^L_{i,\mu,\nu = 1}\bigg[u^\ast_{i\nu}(t) u_{i\mu}(t)\gamma^\dagger_\nu\gamma_\mu + u^\ast_{i\nu}(t)v^\ast_{i\mu}(t)\gamma^\dagger_\nu\gamma^\dagger_\mu + \nonumber \\
+  & & v_{i\nu}(t)u_{i\mu}(t)\gamma_\nu\gamma_\mu + v_{i\nu}(t)v^\ast_{i\mu}(t)\gamma_\nu\gamma^\dagger_\mu\bigg] .
+\end{eqnarray}
+The expression for $\hat{\rho}(t)$ can be written as
+\begin{equation}
+ \label{m:t}
+ \hat{\rho}(t) = \frac{1}{L} \times \rm{Tr}\left[\hat{\kappa^i} \; u^\dagger(t)u(t) + \hat{\kappa^c} \; v^\dagger(t)v(t) + \hat{\epsilon^i} \; u^\dagger(t)v^\ast(t)+\hat{\epsilon^c} \; v^{\ast \dagger}(t)u(t)\right],
+\end{equation}
+where the matrix elements of $\hat{\rho^{i,c}}$ and $\hat{\epsilon^{i,c}}$ are
+\begin{eqnarray}
+\label{matelems}
+\hat{\kappa^i}_{\nu\mu} &=& \gamma^\dagger_\nu\gamma_\mu, \nonumber \\
+\hat{\epsilon^i}_{\nu\mu} &=& \gamma^\dagger_\nu\gamma^\dagger_\mu,\nonumber \\
+\hat{\kappa^c}_{\nu\mu} &=& \gamma_\nu\gamma^\dagger_\mu, \nonumber \\
+\hat{\epsilon^c}_{\nu\mu} &=& \gamma_\nu\gamma_\mu.
+\end{eqnarray}
+Now, note that, all but the third equation among these are normal ordered. Also, since $\gamma_\mu$ ($\gamma^\dagger_\mu$) destroys $|\psi(0)\rangle$ ($\langle\psi(0)|$), all but $\hat{\kappa^c}_{\nu\mu}$ among the operators in eqs.~\ref{matelems} have zero expectation values w.r.t $|\psi(0)\rangle$. This allows for the simplification of eq~\ref{m:t} and then eq~\ref{eq:magops}, yielding
+\begin{equation}
+m(t) = -1+\frac{2}{L} \times {\rm Tr}\left[\langle\kappa^c\rangle {v}^\dagger(t) {v}(t)\right],
+\end{equation}
+where the expectation $\langle\dots\rangle\equiv \langle\psi(0)|\dots|\psi(0)\rangle$. Now, noting that the fermionic nature of the $\gamma$s (detailed in eqns~\ref{eq:fermionicgamma}) demands that $\hat{\kappa^c}_{\nu\mu}\equiv\gamma_\nu\gamma^\dagger_\mu=\delta_{\nu\mu}-\gamma^\dagger_\nu\gamma_\mu$, and taking expectation on both sides yields $\langle\kappa^c\rangle=\mathds{1}$. This gives us the working formula for the magnetization
+\begin{equation}
+ \label{eq:mag}
+\boxed{m(t) = -1+\frac{2}{L} \times {\rm Tr}\left[ {v}^\dagger(t) {v}(t)\right].}
+\end{equation}
+
+\subsection{Autocorrelations}
+\label{subsec:corrcalc}
+We define the autocorrelation at site $j$ in the Ising model picture for this system to be
+\begin{equation}
+\label{eq:corrdef}
+\rho_j(t) = \langle \psi(0) | \sigma^x_{j,H} (t) \sigma^x_{j}(0) |\psi(0)\rangle.
+\end{equation}
+After Jordan Wigner transformation to the fermion picture, and decomposition of $c^{\;}_{i,H}(t), c^\dagger_{i,H}(t)$ in a manner similar to the treatment in subsection~\ref{subsec:magcalc}, this yields
+\begin{equation}
+\rho_j(t) = \langle \psi(0) | \prod^{j-1}_{i=1}\left[a_i(t)b_i(t)\right]\;a_j(t)\;  \prod^{j-1}_{i=1}\left[a_i(0)b_i(0)\right]\; a_j(0)|\psi(0)\rangle,
+\end{equation}
+where $a_i\; (b_i) = \left[v + (-) u\right]_{i\mu}\gamma_\mu + {\rm h.c}$. The product terms above can be simplified by Wick contractions to parity sums over all products of pair averages of the type $\langle a_i(t_1) b_j(t_2) \rangle$, $\langle a_i(t_1) a_j(t_2) \rangle$, and $\langle b_i(t_1) b_j(t_2) \rangle$, where $\langle \cdots\rangle$ is shortand for the quasiparticle vacuum expectation. This can be written as the square root of the determinant of an antisymmetric  $2(2j-1)\times 2(2j-1)$
+Pfaffian matrix, such that $\rho_j(t)={\rm det}\left[\pi_j(t)\right]^{1/2}$, where
+\begin{equation}
+\label{eq:pfaffian}
+\pi_j(t) = \begin{bmatrix}
+            p_j(t,t) & q_j(t,0) \\
+            -q_j(t,0) & p_j(0,0)
+           \end{bmatrix}.
+\end{equation}
+Here, the $(2j-1)\times (2j-1)$ submatrices
+\begin{eqnarray}
+p_j(t_1,t_2)  &=& \begin{bmatrix}
+                  0 & \langle a_1b_1\rangle & \langle a_1 a_2\rangle & \langle a_1 b_2\rangle & \dots & \langle a_1 b_{j-1}\rangle & \langle a_1 a_j\rangle\\
+                   -\langle a_1 b_1\rangle  &        0              & \langle b_1 a_2\rangle & \langle b_1 b_2 \rangle & \dots & \langle b_1 b_{j-1}\rangle & \langle b_1 b_j\rangle \\ 
+                    -\langle a_1 a_2\rangle   &  -\langle b_1 a_2\rangle   & 0 & \vdots & \vdots & \vdots & \vdots \\
+                    \vdots                    &   \vdots                    & \vdots    & \ddots &\vdots & \vdots & \vdots
+                 \end{bmatrix}_{t_1,t_2} ,\nonumber \\
+q_j(t_1,t_2)  &=& \begin{bmatrix}
+                   \langle a_1 a_1\rangle & \langle a_1b_1\rangle & \langle a_1a_2\rangle & \langle a_1b_2\rangle & \dots & \langle a_1a_{j-1}\rangle & \langle a_1a_j\rangle \\
+                   \langle b_1 a_1\rangle & \langle b_1 b_1\rangle & \langle b_1 a_2\rangle & \langle b_1 b_2\rangle & \dots & \langle b_1 b_{j-1}\rangle & \langle b_1 a_j\rangle\\
+                    \vdots                    &   \vdots                    & \vdots    & \ddots &\vdots & \vdots & \vdots
+                  \end{bmatrix}_{t_1,t_2}.
+\end{eqnarray}
+Note that $p_j$ is antisymmetric by construction. The four kinds of terms in the matrix elements above are of the type
+\begin{eqnarray}
+\langle a_j a_m \rangle_{t_1,t_2} & = & \left[v(t_1)+u(t_1)\right]\;\left[v^\dagger(t_2)+u^\dagger(t_2)\right]\bigg|_{jm},\nonumber \\
+\langle a_j b_m \rangle_{t_1,t_2} & = & \left[v(t_1)+u(t_1)\right]\;\left[v^\dagger(t_2)-u^\dagger(t_2)\right]\bigg|_{jm},\nonumber \\
+\langle b_j a_m \rangle_{t_1,t_2} & = & \left[v(t_1)-u(t_1)\right]\;\left[v^\dagger(t_2)+u^\dagger(t_2)\right]\bigg|_{jm},\nonumber \\
+\langle b_j b_m \rangle_{t_1,t_2} & = & \left[v(t_1)-u(t_1)\right]\;\left[v^\dagger(t_2)-u^\dagger(t_2)\right]\bigg|_{jm}.
+\end{eqnarray}
+As a working algorithm, we define four matrices
+\begin{eqnarray}
+  a a  (t_1,t_2) & = & \left[v(t_1)+u(t_1)\right]\;\left[v^\dagger(t_2)+u^\dagger(t_2)\right] ,\nonumber \\
+  a b  (t_1,t_2) & = & \left[v(t_1)+u(t_1)\right]\;\left[v^\dagger(t_2)-u^\dagger(t_2)\right] ,\nonumber \\
+  b a  (t_1,t_2) & = & \left[v(t_1)-u(t_1)\right]\;\left[v^\dagger(t_2)+u^\dagger(t_2)\right] ,\nonumber \\
+  b b  (t_1,t_2) & = & \left[v(t_1)-u(t_1)\right]\;\left[v^\dagger(t_2)-u^\dagger(t_2)\right] .
+\end{eqnarray}
+and interleave their elements accordingly to construct the autocorrelation. The autocorrelation is
+\begin{eqnarray}
+\label{eq:aotocorr:formula}
+\rho_j(t) &=& {\rm det}\left[\pi_j(t)\right]^{1/2},\nonumber \\
+\pi_j(t)  &=& \begin{bmatrix}
+            p_j(t,t) & q_j(t,0) \\
+            -q_j(t,0) & p_j(0,0)
+           \end{bmatrix}, \nonumber \\
+p_j(t_1,t_2)  &=& \begin{bmatrix}
+                  0 & ab_{11} & aa_{12} & ab_{12} & \dots &  ab_{1 j-1} & aa_{1j}\\
+                   - a b_{11}  &        0              &  ba_{12} &  bb_{12}  & \dots &  bb_{1 j-1} &  ba_{1j} \\ 
+                    - a_1 a_2   &  - b_1 a_2   & 0 & \vdots & \vdots & \vdots & \vdots \\
+                    \vdots                    &   \vdots                    & \vdots    & \ddots &\vdots & \vdots & \vdots
+                 \end{bmatrix}_{t_1,t_2} ,\nonumber \\
+q_j(t_1,t_2)  &=& \begin{bmatrix}
+                    aa_{11} &  ab_{11} &  aa_{12} &  ab_{12} & \dots &  aa_{1 j-1} &  aa_{1j} \\
+                    ba_{11} &  bb_{11} &  ba_{12} &  bb_{12} & \dots &  bb_{1j-1} &  ba_{1j}\\
+                    \vdots                    &   \vdots                    & \vdots    & \ddots &\vdots & \vdots & \vdots
+                  \end{bmatrix}_{t_1,t_2}.
+\end{eqnarray}
+
+First, write subsoutines that return matrices $p_j$ and $q_j$. Do these by computing $aa,ab,ba,bb$ from $u$ and $v$ matrices and interleaving submatrix views of $p_j$, $q_j$ into them. Finally, at each time, first initialize the matrix $\pi_j$, then create $4$ submatrix views as above, and pass those as arguments to the $p_j$ and $q_j$ subroutines accordingly. Determinant can be evaluated using standard LU factorization of $\pi_j$.
+
+\textbf{This is tabled for now. Will do this after sending first draft for publication. Let's stick to just magnetization for now.}
+\subsection{Entanglement}
+\label{subsec:entanglement}
+In order to look at the time behavior of quantum bits, we need to calculate the multipartite quantum entanglement of the full system as it evolves in time. However, for large system size $L$, the full state density matrix is of size $2^L\times2^L$, and any computation of multipartite entanglement is unfeasible. Therefore, we restrict ourselves to the subspace of states spanned by the midpoint midpoint sites $i,i+1$, where $i = \left \lceil{L/2}\right \rceil $. In that subspace, we define the two site density matrix
+\begin{equation}
+\label{eq:tsitedmat}
+\rho_i(t) = \rm{Tr}_{\left\{ii+1\right\}^C}\;\rho(t),
+\end{equation}
+where $\rm{Tr}_{\left\{ii+1\right\}^C}$ denotes the trace over all site Hilbert spaces except for the $i,i+1$ sites ('$C$' means complement). This density matrix can be expanded in $SU(2)\otimes SU(2)$ - representation as
+\begin{equation}
+\rho_i(t) = \frac{1}{4}\sum_{a,b} p_{ab}(t)\;\sigma^a_i \otimes  \sigma^b_{i+1},
+\end{equation}
+where $\sigma^{a,b}$ are the 4 canonical $SU(2)$ generators (unit matrix and three Pauli matrices). Since these all obey closed cyclic antocommutation relations, we get
+\begin{equation}
+ p_{ab}(t) = \rm{Tr}\left[\sigma^a_i\sigma^b_{i+1}\rho_i(t)\right] = \langle \sigma^a_i\sigma^b_{i+1}\rangle(t).                                                                                                                                                                       
+\end{equation}
+Applying the above formula to the Ising model version of the Hamiltonian in eq~\ref{H_OBC}, the only nonzero coefficients that remain~\cite{hatano,osborne} contribute to the density matrix as
+\begin{equation}
+ \rho_i(t) = \frac{1}{4} \left[ \mathds{1}_{ii+1} +  \left(\sigma^z_i\otimes \mathds{1}_{i+1}\right)\;\langle\sigma^z_i\rangle(t) +  \left(\mathds{1}_{i}\otimes\sigma^z_{i+1}\right)\;\langle\sigma^z_{i+1}\rangle(t) + \sum_{a=x,y,z}\left(\sigma^a_i\otimes\sigma^a_{i+1}\right)\;\langle \sigma^x_i\sigma^a_{i+1}\rangle(t)\right],
+\end{equation}
+whose entanglement measures can be computed reasonably. The expectation values are given by the matrix
+$G(t) = \left(v-u\right)\left(v+u\right)^\dagger$~\footnote{ This is essentially the same as eq $(2.34)$ of~\cite{lieb} after the mapping of the terms of eq $(2.15)$ of~\cite{lieb} with their equivalents in eq~\ref{eq:gammadef} of this paper.}
+with~\cite{hatano}
+\begin{eqnarray}
+ \langle \sigma^z_j\rangle(t) &=& G_{ii}(t),\nonumber \\
+ \langle \sigma^z_i\sigma^z_{i+1}\rangle(t) &=& \left|\begin{matrix}
+       G_{ii}(t) & G_{ii+1}(t)\\
+       G_{i+1i}(t) & G_{i+1i+1}(t)
+      \end{matrix}\right|, \nonumber \\
+ \langle \sigma^x_i\sigma^x_{i+1}\rangle(t) &=& G_{ii+1}(t),\nonumber \\
+ \langle \sigma^y_i\sigma^y_{i+1}\rangle(t) &=& G_{i+1i}(t).
+\end{eqnarray}
+We propose that the time behavior of the bipartite density matrix in eq~\ref{eq:tsitedmat} is representative of the full multipartite entanglement. The entanglement measure that we choose is the midpoint von-Neumann entropy, given by
+\begin{equation}
+\label{eq:vonneumann}
+\boxed{s_i(t) \equiv -{\rm Tr}\left[\rho_i(t) \ln{\rho_i(t)}\right] = -\sum_p \lambda^p_i(t)\ln{\lambda^p_i(t)},} 
+\end{equation}
+where $\lambda^p_i(t)$ are the instantaneous eigenvalues of $\rho_i(t)$. This quantity satisfies all the necessary requirements of an entanglement measure~\cite{vidal,plenio}.
+
+\section{\sc Analytical Treatment via unitary renormalization group flow in Floquet Space}
+\label{sec:unitary:flows}
+We attempt an analytical treatment of this problem by mapping the $T=2\pi/\omega$ - periodic Hamiltonian in the Hilbert space $\mathcal{H}$ to an effective time-independent Hamiltonian $H_{\rm eff}$ such that the unitary evolution $U(t)$ co-incides with $e^{\imath H_{\rm eff}\;t}$ when $t=nT$. Thus, the actual dynamics will be followed by $e^{\imath H_{\rm eff}\;t}$ only if the time is strobed at integer multiples of the period. However, for sufficiently fast drive, this should prove sufficient since experimental measurements can be made over times averaged over multiples of $T$. In the following analysis, we follow reference~\cite{unitaryflow} where a similar treatment provided an analytical treatment for a shaken optical lattice in the Bose Hubbard model. We note that the Hamiltonian in eq~\ref{H_OBC} can be mapped to hard sphere bosons via Jordan Wigner transformation without changing its structure, and thus is very similar to the Bose Hubbard model apart from the potential energy term and the presence of 
+an extra pair creation term $c^\dagger_ic^\dagger_{i+1}$ in the kinetic energy.
+
+
+Out starting Hamiltonian in eq~\ref{H_OBC} is rendered for a particular disorder configuration $\{J_i,h_i\}$ as
+$H(J_i,h_i,t) = H_s(J_i,h_i) + H_d(J_i,t)$, where
+\begin{eqnarray} 
+\label{eq:hshd}
+H_s(J_i,h_i) &=& - \alpha J \sum_i^{L-1} J_i \left(c^{\dagger}_i c^{\dagger}_{i+1} + c^{\dagger}_i c_{i+1}  + {\rm h.c.}\right) 
+    - 2 \alpha \sum_i^{L}  h_i c^{\dagger}_i c_i \; ,\nonumber \\
+ H_d(J_i,t) &=& -2\; h(t)\sum_i^{L-1} c^{\dagger}_i c_i \; ,
+\end{eqnarray}
+and $h(t)=h_0\cos{\omega t}$ is a scalar drive. Unlike the Hamiltonian in eq~\ref{H_OBC}, we have taken the operators above to be hard sphere bosons (we can do that here) \textit{i.e} $\left[c^{\;}_i,c^\dagger_j\right]=\delta_{ij}$, $\left[c^{\;}_i,c^{\;}_j\right]=\left[c^{\dagger}_i,c^\dagger_j\right]=0$, $\left\{c^{\;}_i,c^{\;}_i\right\}=\left\{c^{\dagger}_i,c^{\dagger}_i\right\}=0$, which implies that $\left(c^\dagger_i\right)^2=\left(c^{\;}_i\right)^2=0$. This Hamiltonian is defined in a complete Hilbert space $\mathcal{H}(J_i,h_i)$. In this Hilbert space, we transform the Hamiltonian by the unitary transformation $U_F(J_i,t) = \exp{\left\{\imath \int^t_0 \mathrm{d}\tau \; H_d(J_i,\tau)\right\}}$. This yields
+\begin{eqnarray}
+ \label{eq:htilde}
+ \tilde{H}(J_i,h_i,t) &=& U_f(J_i,t)\; H(J_i,h_i,t)\; U^\dagger_F(J_i,t) - \imath \; U_F(J_i,t)\; \left\{\frac{\partial}{\partial t} U_F(J_i,t)\right\}^\dagger \nonumber \\
+              &=& U_F(J_i,t)\; H_s(J_i,h_i)\; U^\dagger_F(J_i,t).
+\end{eqnarray}
+This Hamiltonian, like the previous one, is periodic in time with period $T$. Thus, Floquet's theorem states that the corresponding Schr\"odinger equation can be solved by states of the type $|\psi_p (J_i,h_i,t) \rangle = e^{\imath \Omega_p(J_i,h_i) t}\; |\phi_p(J_i,h_i,t)\rangle$, where $|\phi_p(J_i,h_i,t+nT)\rangle=|\phi_p(J_i,h_i,t)\rangle$, and the Floquet quasienergies $\Omega_p(J_i,h_i)$ are real. The Floquet eigenstates $|\phi_p(J_i,h_i,t)\rangle$ can be expanded in a basis $|n(J_i,h_i)\rangle$, where $\langle t |n(J_i,h_i)\rangle = e^{\imath \; n\omega t}$. these basis states span a different Hilbert space $\mathcal{H}_T(J_i,h_i)$. We expand
+\begin{equation}
+\label{eq:fourier}
+\tilde{H}(J_i,h_i,t) = \sum_n \tilde{H}_n(J_i,h_i)\; e^{\imath \; n\omega t},
+\end{equation}
+in $\mathcal{H}(J_i,h_i)$, and map the corresponding Floquet operator $K(J_i,h_i,t)\equiv \tilde{H}(J_i,h_i,t)-\imath \; {\partial\over\partial t} $ to an operator $\mathcal{K}(J_i,h_i)$ in a Floquet space $\mathcal{H}(J_i,h_i)\otimes\mathcal{H}_T(J_i,h_i)$, where
+\begin{equation}
+\label{eq:floquetop}
+\mathcal{K}(J_i,h_i) = \tilde{H}_0(J_i,h_i) \otimes \mathds{1} + \mathds{1}\otimes \omega \; \hat{n}(J_i,h_i)  + \sum_{n\neq 0} \tilde{H}_n(J_i,h_i)  \otimes \sigma_n(J_i,h_i).
+\end{equation}
+Here, the operator $\imath \; {\partial\over\partial t}  $ has been mapped to $\mathds{1}\;\otimes\; \omega\; \hat{n}(J_i,h_i) $, where the Floquet number operator is  $\hat{n}(J_i,h_i) \; |n(J_i,h_i) \rangle = n(J_i,h_i) \;|n(J_i,h_i) \rangle$, and $\hat{n}\in\mathcal{H}_T(J_i,h_i)$. In addition, the operators $\sigma_n(J_i,h_i) \in \mathcal{H}_T(J_i,h_i)$ act as ladder operators with $\sigma_m(J_i,h_i) \; |n(J_i,h_i) \rangle = |n(J_i,h_i) +m(J_i,h_i) \rangle$. Note that $\sigma_0 (J_i,h_i) = \mathds{1}$. We can solve for $\tilde{H}_n(J_i,h_i)$ using eqs~\ref{eq:htilde} and~\ref{eq:hshd}, as well as the Fourier expansion in eq~\ref{eq:fourier}. Using the Bessel function generator $\exp{\left[\imath \; \eta \; \sin{\omega t}\right]}=\sum_m \mathcal{J}_m(\eta)\; e^{\imath n \omega t}$, we obtain
+\begin{eqnarray}
+\label{eq:hn}
+\tilde{H}_0(J_i,h_i) &  =   & -\alpha J\;\sum_{i=1}^{L-1} \mathcal{J}_0(\eta) J_i \left( c^\dagger_i c^\dagger_{i+1} + 						c^\dagger_i c^{\;}_{i+1} + \rm{h.c} \right) -2 \;\alpha\;\sum_{i=1}^{L-1} h_i c^\dagger_i c^{\;}_i,\nonumber \\ 
+\tilde{H}_n(J_i,h_i) &  =   &  \sum_{i=1}^{L-1}  \tilde{H}_n(J_i),\nonumber \\
+\tilde{H}_n(J_i)   &\equiv& -\alpha J J_i \bigg\{ \mathcal{J}_n(\eta)  \left( c^\dagger_i 		    c^\dagger_{i+1} + 					c^\dagger_i c^{\;}_{i+1} \right) +\mathcal{J}_{-n}(\eta) \left(c^{\;}_{i+1}c^{\;}_i + 		     						c^\dagger_{i+1} c^{\;}_{i} \right)\bigg\},
+\end{eqnarray}
+where $\eta\equiv4\; h_0/\omega$.
+
+Now, we seek a family of unitary transformations on the set of Floquet operators $\mathcal{K}(J_i,h_i,l)\in\mathcal{H}(J_i,h_i)\otimes\mathcal{H}_T(J_i,h_i) $ generated by the antihermitian operators $\Gamma(J_i,h_i,l)\in\mathcal{H}(J_i,h_i)\otimes\mathcal{H}_T(J_i,h_i)$, such that $\mathcal{K}(J_i,h_i) = \mathcal{K}(J_i,h_i,l)|_{l=0}$, and 
+\begin{equation}
+\label{eq:flows}
+\frac{\mathrm{d}}{\mathrm{d}l}\;\mathcal{K}(J_i,h_i,l) = \bigg[\Gamma(J_i,h_i,l)\;,\;\mathcal{K}(J_i,h_i,l)\bigg].
+\end{equation}
+Due to eq~\ref{eq:flows} above, all the $;\mathcal{K}(J_i,h_i,l)$s are equivalent since they are linked by a unitary transformation. It is expected that the fixed point in the $l-$dynamics in $\mathcal{H}(J_i,h_i)\otimes\mathcal{H}_T(J_i,h_i)$ will yield a corresponding time independent $H_{\rm eff}$ in $\mathcal{H}(J_i,h_i)$. This may not be possible exactly, but a series expansion of the solution in powers of $\omega^{-1}$ may yield a fixed point Hamiltonian that is constant to $\mathcal{O}(\omega^{-1})$, thus making the solution sufficient for fast drives. To iterate such a solution to the flow equation~\ref{eq:flows}, we propose as an ansatz for our first iteration the generator
+\begin{equation}
+\label{eq:g1}
+\Gamma_1(J_i,h_i,l) = \sum_{i=1}^{L-1}\sum_{n\neq0} \omega n b_n(l)\tilde{H}_n(J_i) \otimes \bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\},
+\end{equation}
+and the trial solution
+\begin{equation}
+\label{eq:k1}
+\mathcal{K}_1(J_i,h_i,l) = \tilde{H}_0(J_i,h_i) \otimes \mathds{1} + \mathds{1}\otimes \omega \; \hat{n}(J_i,h_i)  + \sum_{j=1}^{L-1} \sum_{m\neq 0} b_m(l)\;\tilde{H}_m(J_j)  \otimes \sigma_m(J_j,h_j),
+\end{equation}
+for the flow equation
+\begin{equation}
+\label{eq:firstflow}
+\frac{\mathrm{d}}{\mathrm{d}l}\;\mathcal{K}_1(J_i,h_i,l) = \bigg[\Gamma_1(J_i,h_i,l)\;,\;\mathcal{K}_1(J_i,h_i,l)\bigg],
+\end{equation}
+and the initial condition $b_m(0)=1$. The choice of parameter function $b_m(l)$ keeps the theory manifestly renormalizable~\cite{unitaryflow}, since changing the value of $l$ keeps the structure of the Hamiltonian (and hence the path integral) invariant.
+Now, performing $l-$ derivative on eqs~\ref{eq:k1} and equating it to the rhs of eq~\ref{eq:flows} yields
+\begin{multline}
+ \frac{1}{\omega^2}\; \frac{\mathrm{d}}{\mathrm{d}l}\; \mathcal{K}_1(J_i,h_i,l) = \frac{1}{\omega^2}\;\sum_{i=1}^{L-1} \sum_{n\neq 0} \frac{\mathrm{d}b_n(l)}{\mathrm{d}l}\;\tilde{H}_n(J_i)  \otimes \sigma_n(J_i,h_i) \\
+=\frac{1}{\omega}\sum_{i=1}^{L-1}\sum_{n\neq0} n b_n(l)\; \left[\tilde{H}_n(J_i),\tilde{H}_0(J_i,h_i)\right]\otimes \bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\}-  \\
+\sum_{i=1}^{L-1}\sum_{n\neq0} n^2 b_n(l) \tilde{H}_n (J_i)\otimes  \sigma_n(J_i,h_i).
+\end{multline}
+Evaluating the commutator in the RHS yields
+\begin{multline}
+\label{eq:firstiter}
+\frac{1}{\omega^2}\;\sum_{i=1}^{L-1} \sum_{n\neq 0} \frac{\mathrm{d}b_n(l)}{\mathrm{d}l}\;\tilde{H}_n(J_i)  \otimes \sigma_n(J_i,h_i) \\
+= \frac{2\alpha^2 J}{\omega}\sum_{i=1}^{L-1}\sum_{n\neq0} n b_n(l)\;J_i\; h_i \bigg\{
+\mathcal{J}_n(\eta)\bigg[c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg]-\\
+\mathcal{J}_{-n}(\eta)\bigg[c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+\bigg]   \bigg\}\otimes\\ \bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\}- \sum_{i=1}^{L-1}\sum_{n\neq0} n^2 b_n(l) \tilde{H}_n (J_i)\otimes  \sigma_n(J_i,h_i).
+\end{multline}
+In order to arrive at the result above, we have used the following theorems. For a particular instance of $(J_i,h_i)$ and $\forall |k\rangle\;\in\;\mathcal{H}_T\; \ni \langle t |k\rangle = e^{\imath k \omega t}$,
+\begin{enumerate}
+ \item
+ $\left[\sigma_m,\sigma_n\right] = 0$, because  
+ $\sigma_m\sigma_n|k\rangle=|n+m+k\rangle=\sigma_n\sigma_m|k\rangle$.
+\item
+$[\sigma_m,\hat{n}] = -m\sigma_m$, because $[\sigma_m,\hat{n}]|k\rangle = \sigma_m\hat{n}|k\rangle- \hat{n}\sigma_m|k\rangle = k\sigma_m|k\rangle-\hat{n}|k+m\rangle = k|k+m\rangle-(k+m)|k+m\rangle = -m|k+m\rangle=-m\sigma_m|k\rangle$.
+ \item
+ $\Gamma_1$ does not commute with the first term in  eq~\ref{eq:k1}. However, the first term contains $\tilde{H}_0$ from eq~\ref{eq:hn}, and $\Gamma_1$ commutes with the kinetic energy term but NOT the potential energy term therein.
+ \item
+ $\Gamma_1$ does not commute with the second term in eq~\ref{eq:k1} \textit{i.e} $\mathds{1}\otimes \omega \; \hat{n}(J_i,h_i) $ for the same reason that it does not commute with the potential energy in $\tilde{H}_0$.
+\item 
+ $\Gamma_1$ commutes with the  last term in eq~\ref{eq:k1}. \textbf{Check!}
+\end{enumerate}
+
+In equation~\ref{eq:firstiter} above, the last term in the RHS is the dominant term for large $\omega$ and the other ones can be dropped. Equating coefficients yields
+\begin{equation}
+ \frac{\mathrm{d}b_n(l)}{\mathrm{d}l} = -\omega^2 n^2 b_n(l),
+\end{equation}
+together with initial conditions. These yield $b_n(l) = e^{-\omega^2 n^2 l}$. The fixed point is $b_n(l)=0$. However, this is not enough, since we want dominant terms of $\mathcal{O}(1/\omega)$, rather than  $\mathcal{O}(1)$. Keeping these terms in eq~\ref{eq:firstiter} renders the RG flow equations analytically insoluble. Therefore, a second iteration is required along the lines of~\cite{unitaryflow}, where the antihermitian generator is chosen to be
+\begin{multline}
+\label{eq:g2}
+\Gamma_2(J_i,h_i,l) = \Gamma_1(J_i,h_i,l)+ {2\alpha^2 J}\sum_{i=1}^{L-1}\sum_{n\neq0}  b_n(l)\; J_i\; h_i \bigg\{
+\mathcal{J}_n(\eta)\bigg[c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg]-\\
+\mathcal{J}_{-n}(\eta)\bigg[c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+\bigg]   \bigg\}\otimes \bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\}
+\end{multline}
+and the trial solution
+\begin{multline}
+\label{eq:k2}
+\mathcal{K}_2(J_i,h_i,l) = \mathcal{K}_1(J_i,h_i,l)+\alpha\sum_{i=1}^{L-1} J_i\; h_i \bigg\{
+a_+(l)\bigg[c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg]-\\
+a_-(l)\bigg[c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+\bigg]   \bigg\}\otimes \mathds{1},
+\end{multline}
+with the initial conditions $a_\pm(0)=0\;,\;b_m(0)=1$ from the earlier iteration. The flow equation now reads
+\begin{equation}
+\label{eq:secondflow}
+ \frac{\mathrm{d}}{\mathrm{d}l}\;\mathcal{K}_2(J_i,h_i,l) = \bigg[\Gamma_2(J_i,h_i,l)\;,\;\mathcal{K}_2(J_i,h_i,l)\bigg].
+\end{equation}
+Substituting eqs~\ref{eq:k2} and~\ref{eq:firstflow} yields
+\begin{multline}
+\label{eq:abeq}
+\frac{1}{\omega^2}\frac{\mathrm{d}}{\mathrm{d}l}\;\mathcal{K}_1(J_i,h_i,l) + \frac{1}{\omega^2}\frac{\mathrm{d}}{\mathrm{d}l}\;\mathcal{A}_\mathcal{K}(J_i,h_i,l)=\\
+\frac{1}{\omega^2}\bigg[\Gamma_1(J_i,h_i,l),\mathcal{K}_1(J_i,h_i,l) \bigg]+
+\frac{1}{\omega^2}\bigg[\Gamma_1(J_i,h_i,l), \hat{A}_\mathcal{K}(J_i,h_i,l)\bigg] -\\
+\frac{2\alpha J}{\omega}\bigg[\mathds{1}\otimes\hat{n}(J_i,h_i),\mathcal{A}_\Gamma(J_i,h_i,l) \bigg]+\mathcal{O}(1/\omega^2). 
+\end{multline}
+where the operators
+\begin{multline}
+\label{eq:ag}
+\mathcal{A}_\Gamma(J_i,h_i,l) \equiv \alpha\sum_{i=1}^{L-1}\sum_{n\neq0}  b_n(l)\; J_i\; h_i \bigg\{
+\mathcal{J}_n(\eta)\bigg[c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg]-\\
+\mathcal{J}_{-n}(\eta)\bigg[c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+\bigg]\bigg\}\otimes \bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\},
+\end{multline}
+and
+\begin{multline}
+\label{eq:ak}
+\mathcal{A}_\mathcal{K}(J_i,h_i,l) \equiv \alpha \sum_{i=1}^{L-1} J_i\; h_i \bigg\{
+a_+(l)\bigg[c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg]-\\
+a_-(l)\bigg[c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right)\bigg]   \bigg\}\otimes \mathds{1}.
+\end{multline}
+Note that the first and second terms in the RHS of eq~\ref{eq:abeq} above is of $\mathcal{O}(1/\omega)$, as can be seen from the definition of $\Gamma_1(J_i,h_i,l)$ in eq~\ref{eq:g1}. 
+
+The third term in the RHS of eq~\ref{eq:abeq} to be
+\begin{multline}
+\label{eq:abeq:rhs2}
+-\frac{2\alpha J}{\omega}\bigg[\mathds{1}\otimes\hat{n}(J_i,h_i),\mathcal{A}_\Gamma(J_i,h_i,l) \bigg] = -\frac{2\alpha^2 J}{\omega}
+\sum_{i=1}^{L-1}\sum_{n\neq0} n b_n(l)J_i\; h_i \bigg\{
+\mathcal{J}_n(\eta)\bigg(c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+\bigg)-\\
+\mathcal{J}_{-n}(\eta)\bigg(c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+\bigg)\bigg\}\otimes \sigma_n(J_i,h_i).
+\end{multline}
+Note from eqs~\ref{eq:abeq:rhs2} and~\ref{eq:firstiter} that the entire expression in the RHS above cancels with the $\sigma_n(J_i,h_i)$ -term in the first RHS expression of eq~\ref{eq:abeq}. 
+
+The first term in the RHS of equation~\ref{eq:abeq} is identical to the RHS of eq~\ref{eq:firstiter}.Substituting the operators above into equation~\ref{eq:abeq} yields the second term in the RHS to be
+\begin{multline}
+\label{eq:abeq:rhs1}
+\frac{1}{\omega^2}\bigg[\Gamma_1(J_i,h_i,l), \hat{A}_\mathcal{K}(J_i,h_i,l)\bigg] = 
+\frac{\alpha}{\omega}\sum^{L-1}_{i,j=1}\sum_{n\neq 0} n b_n(l) J_j h_j \bigg\{ a_+(l)\bigg[\tilde{H}_n(J_i),
+c^\dagger_{j-1}\left(c^{\;}_j - c^\dagger_j\right) - c^\dagger_j\left( c^\dagger_{j+1}+c^{\;}_{j+1} \right)\bigg] -\\
+a_-(l) \bigg[ \tilde{H}_n(J_i),c^{\;}_{j-1} \left(c^\dagger_j -c^{\;}_j\right)-c^{\;}_j \left(c^\dagger_{j+1}+c^{\;}_{j+1}\right)\bigg]\bigg\}\otimes
+\bigg\{\sigma_n(J_i,h_i)-\mathds{1}\bigg\}, 
+\end{multline}
+a term that goes as $\mathcal{O}[(1+\alpha J_i)^2/\omega]$, and contains contributions from 3-boson amplitudes like $c^\dagger_i c^\dagger_{i+1} c^{\;}_{i+2}$ and $c^\dagger_i c^\dagger_{i+1} c^{\dagger}_{i+2}$ (\textbf{I did this in Mathematica and checked}). These terms are not renormalizable in this theory, since the LHS of eq~\ref{eq:abeq} does not contain such terms. To circumvent this, we follow the prescription of~\cite{unitaryflow} (page 4 of the supplementary material) and set $a_\pm(l)=a\pm(0)=0$ on the RHS of the flow equation~\ref{eq:abeq}.
+
+Substituting the LHS of eq~\ref{eq:firstiter} and the $l-$ derivative of eq~\ref{eq:ak} in the LHS of eq~\ref{eq:abeq} above and comparing the $i^{th}$ terms in the sums over lattice sites yields the following flow dynamics
+\begin{eqnarray}
+\label{eq:rgflow}
+ \frac{\mathrm{d}b_n}{\mathrm{d}l} &=& -\omega^2 n^2 b_n, \nonumber \\
+ \frac{\mathrm{d}a_+}{\mathrm{d}l} &=& -2\alpha J \omega \sum_{n\neq0} n b_{n}(l)\; \mathcal{J}_n(\eta),\nonumber \\
+ \frac{\mathrm{d}a_-}{\mathrm{d}l} &=& +2\alpha J \omega \sum_{n\neq0} n b_{-n}(l) \; \mathcal{J}_n(\eta),
+\end{eqnarray}
+subject to initial conditions $a_\pm(0)=0$, $b_n(0)=1$. The first equation solves to the same solution as the first iteration \textit{viz.} $b_n(l)=e^{-n^2\omega^2 l}$, and integrating the last two equations with this solution yields (note that $b_n=b_{-n}$)
+\begin{eqnarray}
+a_+(l) &=& -\frac{2\alpha J}{\omega}  \sum_{n\neq0} \left(1-e^{-n^2\omega^2 l}\right)\; \frac{\mathcal{J}_n(\eta)}{n},\nonumber \\
+a_-(l) &=& +\frac{2\alpha J}{\omega}  \sum_{n\neq0} \left(1-e^{-n^2\omega^2 l}\right)\; \frac{\mathcal{J}_n(\eta)}{n}.
+\end{eqnarray}
+The fixed point of the flow dynamics occurs when $b_n=0$ $\forall n$. This happens at $l\rightarrow\infty$, where 
+\begin{equation}
+ a_\pm(\infty)=\mp \frac{2\alpha J}{\omega}  \beta(\eta),
+\end{equation}
+where $\beta(\eta)\equiv\sum_{n\neq 0} \frac{\mathcal{J}_n(\eta)}{n}$. Substituting these in eq~\ref{eq:k2} and~\ref{eq:k1} yields
+\begin{multline}
+\mathcal{K}_2(J_i,h_i,\infty) = \tilde{H}_0(J_i,h_i)\;\otimes\; \mathds{1}+ \mathds{1}\;\otimes \; \omega \hat{n}(J_i,h_i)-\frac{2\alpha^2 J}{\omega}\;\beta(\eta)\sum_{i=1}^{L-1} J_i h_i \bigg\{
+ c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+ +\\
+ c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+    \bigg\}\otimes \mathds{1} + \mathcal{O}(1/\omega^2).
+\end{multline}
+Since this $\mathcal{K}_2(J_i,h_i,\infty)$ is linked to the original $\mathcal{K}(J_i,h_i)$ in eq~\ref{eq:floquetop} by unitary transformations, they are equivalent. However, the Floquet operator $\mathcal{K}_2(J_i,h_i,\infty)$ $\in \mathcal{H} \otimes \mathcal{H}_T$ maps to a time-independent Hamiltonian in $\mathcal{H}$. Substituting eq~\ref{eq:hn} in the equation above and mapping it to $\mathcal{H}$ yields
+\begin{multline}
+\label{eq:heff:finite}
+H_{\rm eff}(J_i,h_i,L) = -J\;\sum_{i=1}^{L-1} \mathcal{J}_0(\eta) \alpha J_i \left( c^\dagger_i c^\dagger_{i+1} + 						c^\dagger_i c^{\;}_{i+1} + \rm{h.c} \right) -2 \;\alpha\; J\; \sum_{i=1}^{L-1} \frac{h_i}{J}\; c^\dagger_i c^{\;}_i -\\
+\frac{2\alpha^2 J^2}{\omega}\;\beta(\eta)\sum_{i=1}^{L-1} J_i \frac{h_i}{J}\; \bigg\{
+ c^\dagger_{i-1}\left(c^{\;}_i - c^\dagger_i\right) - c^\dagger_i\left( c^\dagger_{i+1}+c^{\;}_{i+1} \right) 
+ +\\
+ c^{\;}_{i-1} \left(c^\dagger_i -c^{\;}_i\right)-c^{\;}_i \left(c^\dagger_{i+1}+c^{\;}_{i+1}\right) 
+    \bigg\}+ \mathcal{O}(1/\omega^2),
+\end{multline}
+where we have scaled $h_i$ by $J$ to keep all operator expressions dimensionless. In the thermodynamic limit and with periodic boundary conditions, terms like $\sum_i c^\dagger_{i-1}c^{\;}_i$ are identical to $\sum_i c^\dagger_i c^{\;}_{i+1}$ and several terms in eq~\ref{eq:heff:finite} cancel out, yielding
+\begin{multline}
+H_{\rm eff}(J_i,h_i) = -J\mathcal{J}_0(\eta)\;\sum_{i}  \alpha J_i \left( c^\dagger_i c^\dagger_{i+1} + 						c^\dagger_i c^{\;}_{i+1} + \rm{h.c} \right) -2 \;\alpha\; J\; \sum_{i} \frac{h_i}{J}\; c^\dagger_i c^{\;}_i +\\
+\frac{4\alpha^2 J^2}{\omega}\;\beta(\eta)\sum_{i} J_i \frac{h_i}{J}\; \left(c^\dagger_i c^\dagger_{i+1}+c^{\;}_ic^{\;}_{i+1}\right)+ \mathcal{O}(1/\omega^2).
+\end{multline}
+This can be rewritten as
+\begin{eqnarray}
+\label{eq:heff}
+H_{\rm eff}(J_i,h_i) &   =  & -J\sum_i j^{(0)}_i\left(c^\dagger_i c^\dagger_{i+1} + \rm{h.c.}\right) -J\sum_i 							  j^{(1)}_i\left(c^\dagger_i c^{\;}_{i+1}+\rm{h.c}\right)-\mu\sum_i j^{(2)}_i \hat{n}_i 					  +\mathcal{O}(1/\omega^2) \nonumber \\
+j^{(0)}_i            &\equiv& \; \left[\mathcal{J}_0(\eta) - \frac{4\alpha h_i}{\omega}\beta(\eta)\right] \alpha J_i,\nonumber \\
+j^{(1)}_i            &\equiv& \; \mathcal{J}_0(\eta) \alpha J_i,\nonumber \\
+j^{(2)}_i            &\equiv& \frac{h_i}{J},\nonumber \\
+\mu 		     &\equiv& 2\alpha J.
+\end{eqnarray}
+Note that this effective Hamiltonian \textbf{has the same basic structure as the undriven Hamiltonian} in eq~\ref{H_OBC}. Therefore, solving the problem of the driven Ising spins \underline{can be mapped to an impulse quench} 
+in the Ising spins with different amplitudes. This is , of course, only true to $\mathcal{O}(1/\omega)$. Also, note that when there is no disorder \textit{i.e.} $\alpha=0$, then the system freezes at $\mathcal{J}_0(\eta)=0$, where $j^{(0)}_i,j^{(1)}_i,\mu = 0$. More generally, at frozenness, $j^{(0)}_i \sim \alpha\omega^{-1}$ and only becomes sufficiently small for frozenness for small disorder or large $\omega$.
+
+\section{\sc Notes on Algorithm}
+The code in this tarball integrates the dynamics above numerically in a parallel multithreaded computing environment. It evaluates the magnetization and entanglement as functions of time, and dumps the output files. Here are some preliminary notes and suggestions on the algorithm used to implement the dynamics described in the previous section.
+\begin{itemize}
+ \item
+ The source code requires the following dependencies to compile successfully
+ \begin{enumerate}
+  \item 
+  A GNU shell environment with the GNU bash shell. On most UNIX and Linux systems, this is installed by default. On windows and macs, please install the MinGW shell environment~\cite{mingw} or Cygwin~\cite{cygwin}.
+  \item
+  A GNU - compatible C compiler and linker. On most UNIX and Linux systems, the GNU-CC (gcc) compiler an be easily installed. On windows and macs, please install such a compiler in your MinGW or Cygwin installations~\cite{gccmingw,gcccygwin}. Any GNU compatible C compiler should do it, whether its gcc or any other like icc (Intel C compiler), bcc (Bourne C compiler), etc.
+  \item
+  The GNU Make toolkit~\cite{make}. On most UNIX and Linux systems, this is installed by default. On windows and macs, please install GNU Make in your MinGW or Cygwin installations in a manner similar to~\cite{gccmingw,gcccygwin}.
+  \item
+  \LaTeX , for the documentation.
+  \item
+  The \LaTeX - autocompiler 'latex-mk'~\cite{latexmk}.
+  \item
+  The GNU Scientific library~\cite{galassi:gsl}. This is required for the matrix implementation, the default BLAS (Basic Linear Algebra Subprograms)~\cite{blas} for matrix-matrix multiplications, and the ODE integrators. You can link other BLAS libraries if you want, and boiler plate changes to the code will not be necessary. In addition, the uniform random number generators of the GSL are being used.
+  \item
+  The GLib library and associated header file 'glib.h'~\cite{glib}. This is a cross-platform software utility library that  provides advanced data structures, such as linked lists, hash tables, dynamic arrays, balanced binary trees etc. The dynamic array type from this library will be used to store output data during runtime.
+  \item
+  Any implementation of the OpenMP standard of shared memory parallelization. For details, see~\cite{openmp}. The program has been tested with the open source GOMP~\cite{gomp} library that implements OpenMP, but any implementation should work.
+  \item
+  Any implementation of the MPI standard of Message Passing Parallelization. For details, see~\cite{mpi}. The program has been tested with OpenMPI~\cite{openmpi}.
+\item
+ Optional: The Python Programming Language~\cite{python}, as well as numpy~\cite{numpy}, scipy~\cite{scipy} and matplotlib~\cite{matplotlib} packages for the postprocessing scripts.
+ \end{enumerate}
+ \item
+ The code is in a 'tarball' that can be uncompressed using any decompression tool like GNU tar, or 7-zip. The source code is distributed in the C files, and default makefiles are provided. Please adjust the makefile as needed before compiling. The tarball also provides scripts for running the compiled binary.
+ \item
+ To compile the code, just untar the package and run  
+ \shellcmd{make}
+ This should compile the code into a single binary named 'isingrand\_parallel'. Executing this without any flags will dump out usage instructions.  
+ \item
+ To compile any particular object, like the integrator or the main file, simply run 'make' followed by the object name. For example, to compile the integrator object, run
+ \shellcmd{make integrator.o}
+ This will create the object file 'integrator.o'.
+ \item
+ To build the documentation from \LaTeX , simply navigate to the 'writeup' directory and run
+ \shellcmd{make dvi/pdf/ps/html}
+ Choose any one of the above options. This will build the document from the \LaTeX - file.
+ \item
+  I am implementing the integrators in the GNU Scientific Library~\cite{galassi:gsl} for solving the actual dynamics. The library contains many implementations of Runge Kutta and Bulirsch St\"oer routines that can be used and interchanged easily. However, using Bulirsch St\"oer routine requires the calculation of the Jacobian of the dynamics, and I have not implemented this currently. The jacobian is currently just a placeholder blank function that returns the macro GSL\_SUCCESS without actually doing anything. Runge Kutta methods will work, and the default method coded is the 'rk8pd' method \textit{i.e.} the $8^{th}$ order Runge-Kutta Prince Dormand method with $9^{th}$ order error checking.
+\item
+ The program runs multiple instances of the random number generation via a loop that runs through $N$ counts of the random number generator. This loop is parallelized.
+\item
+ The program uses Hybrid OpenMP/MPI programming to distribute the work load across multiple processors in multiple nodes of a cluster.  The program can be run with $p$ MPI processes and after setting the environment variable OMP\_NUM\_THREADS. Each mpi process generates its own seed, instantiates its own copy of a random number generator using that seed, and spawns \$OMP\_NUM\_THREADS OpenMP threads, distributing the workload of the loop described above by OpenMP work sharing constructs. 
+\item
+In order to run the program with only one processor in one node, just run the compiled binary with no arguments to see a help page with a list of all options and flags. To run it in a standard mpi environment, run the binary and its options/flags after appending them to an MPI runtime command like 'mpiexec','mirun','ibrun','poe' etc. Sample run scripts are given in the 'scripts' directory.
+\item
+The 'scripts' directory also contains some python scripts to postprocess the data from the main program. They have the extension '.py' and are individually commented in detail.
+  \item 
+  I have \textbf{not hardcoded} the input block except for the lattice size, and I strongly suggest keeping it that way. The data is read using the 'getopt' library in glibc~\cite{getopt}, and there is a sample run script named 'runprog.sh' that runs the program with default values. Please alter it as necessary.
+ \item
+ To speed up program execution, output data is dumped to a dynamic array in memory. After the integrations, the array data is dumped to disk. This is faster than dumping to disk during actual runtime, although this does mean that the program eats up a lot of memory. The dynamic arrays are constructed using data collection tools from the GLib library~\cite{glib}, such as the 'Array' data structure. This method guards against memory leaks that may arise from incorrectly using \textbf{malloc()} or \textbf{realloc()} directly.
+\end{itemize}
+\section{\sc Comparison with numerics}
+\label{sec:comparisons}
+\begin{table*}
+\caption{\label{tab:fdoff} Table of freezing time scales $\tau$ for different values of $\omega$ at fized $\eta$. This is with field disorder off.}
+\begin{tabular}{@{}|l||cc|cc|}
+\hline
+  & & $\eta = 1.0$ & & $\eta \approx 2.4048$   \\
+ &&  Away from first zero of  $\mathcal{J}_0(\eta)$ &&  At first zero of $\mathcal{J}_0(\eta)$\\
+\hline 
+\hline
+$\omega = 0$ ($h_0=0$) &&  $\tau = 2.3317  \pm 0.0002$&&$\tau = 002.3317 \pm 0.0002$  \\
+\hline
+$\omega = 0.100$ && $\tau = 2.3430 \pm 0.0010$ && $\tau = 002.407 \pm 0.0010$ \\
+\hline
+$\omega = 0.345$ && $\tau = 2.9000 \pm 0.0010$ && $\tau = 005.596\pm 0.0020$ \\
+\hline
+$\omega = 0.590$ && $\tau = 3.1140 \pm 0.0010$ && $\tau = 014.5100 \pm 0.0200$ \\ 
+\hline
+$\omega = 1.080$ && $\tau = 3.3641 \pm 0.0004$ && $\tau = 125.9000 \pm 0.1000 $\\
+\hline
+$\omega = 2.060$ && $\tau = 3.4505 \pm 0.0004 $ && $\tau = 550.0000 \pm 10  $ \\ 
+\hline
+\end{tabular}
+\end{table*}
+\begin{table*}
+\caption{\label{tab:fdon} Table of freezing time scales $\tau$ for different values of $\omega$ at fized $\eta$. This is with field disorder on.}
+\begin{tabular}{@{}|l||cc|cc|}
+\hline
+  & & $\eta = 1.0$ & & $\eta \approx 2.4048$   \\
+ &&  Away from first zero of  $\mathcal{J}_0(\eta)$ &&  At first zero of $\mathcal{J}_0(\eta)$\\
+\hline 
+\hline
+$\omega = 0$ ($h_0=0$) &&  $\tau = 1.762 \pm 0.002$&&$\tau = 01.762 \pm 0.002$  \\
+\hline
+$\omega = 0.34$ && $\tau = 2.957 \pm 0.003$ && $\tau = 04.424 \pm 0.004$ \\
+\hline 
+$\omega = 1.10$ && $\tau = 2.597 \pm 0.003$ && $\tau = 05.782 \pm  0.004$\\
+\hline
+$\omega = 1.60$ && $\tau = 2.405 \pm 0.003$ && $\tau = 30.200\pm 0.300 $ \\ 
+\hline
+$\omega = 2.09$ && $\tau = 2.445 \pm 0.003$ && $\tau = 70.000 \pm 1.000$ \\
+\hline
+\end{tabular}
+\end{table*}
+In this section, we compare our analytical results with numerical results. The first part involves a sanity check with existing results for the impulse quenched problem. The final part investigates the onset of freezing in the full system for large drives.
+\begin{figure}
+\caption{(Color Online) Comparison of the long time and disorder averaged magnetization $\langle Q \rangle$, given by eq~\ref{eq:Qdis}. In the left (right) panel, the magnetizations are plotted against drive amplitude $\omega$ while drive amplitude $h_0$ is varied such that $\eta=4h_0/\omega$ is always fixed at the first resonance  \textit{i.e} the first zero of $\mathcal{J}_0(\eta)$ as indicated in the title (away from first resonance as indicated in the title). In these plots, $\alpha=0.3$, $L=100$,  and the disorder statistics are performed over $10^3$ disorder realizations. In all cases, the initial condition was chosen to be the classical ground state of the disordered Ising model \textit{viz.} the state with all spins pointing up. The error bars represent disorder fluctuations in $Q$ at the corresponding values of $\omega$. The inset plots $\langle m(t)\rangle $  ( with time in units of $\hbar/J$) for the values of $\omega$ in the legend.}
+\label{fig:multh0:q}
+\end{figure}
+In the evolution of the full periodically driven Hamiltonian, the analytical treatment in sec~\ref{sec:unitary:flows} indicates that if the system is driven at resonance $\mathcal{J}_0(\eta)=0$, then the effective Hamiltonian simplifies from eq~\ref{eq:heff} to
+\begin{eqnarray}
+\label{eq:heff:resonance}
+H^{\rm res}_{\rm eff}(J_i,h_i) &   =  & \alpha J\sum_i j_i(h_i,J_i)\left[c^\dagger_i c^\dagger_{i+1} + \rm{h.c.}\right] -2\alpha\sum_i h_i \hat{n}_i 					  +\mathcal{O}(1/\omega^2) \nonumber \\
+j_i(h_i,J_i)            		       & \equiv& \;  \left(\frac{h_i}{h_0}\right)\;\eta \;\beta(\eta) \alpha J_i = \left(\frac{4 h_i}{\omega}\right) \;\beta(\eta) \alpha J_i.
+\end{eqnarray}
+
+\begin{figure}
+\caption{(Color Online) Plots of the time-disorder averaged magnetization $\langle Q \rangle$ as a function of $\omega$ for two different values of disorder amplitude $\alpha$ in a lattice of size $L=100$ with open boundaries. The system is always kept at the resonance given by eqn~\ref{eq:freezing}. In each panel, the red line $+$ red circles  (blue line) plots the ordinate $\langle Q \rangle$ for the full driven Hamiltonian given by eqn~\ref{H_OBC} (effective resonance Hamiltonian given by eqn~\ref{eq:heff:resonance}) averaged in time over $t=\left[0,300\right]$ (in units of $\hbar/J$) and in disorder over $10^3$ realizations. The system always starts from the classical ground state at $t=0$. These magnetizations are plotted against the abscissae $\omega$. The values of $\alpha$ chosen are indicated in the legends. The values of $\eta$ in panels (a) and (c) are chosen to lie in the first zero of $\mathcal{J}_0(\eta)$, and those in panels (b) and (d) are chosen to lie in the fourth zero of $\mathcal{J}_0(\
+eta)$.}
+\label{fig:multh0:qcomp}
+\end{figure}
+Henceforth, we shall keep $\eta$ fixed while varying $h_0 ,\omega$ accordingly. 
+
+This Hamiltonian is time independent, and effectively serves to map the driven problem to an impulse quenched one. In the limit of sufficiently large $\omega$ or $h_0$, $j_i(J_i) \rightarrow 0 \ \forall J_i$ , and this Hamiltonian is diagonal in the basis of fock states to order $\mathcal{O}(h^{-1}_0)$. Thus,  the sites decouple and the time evolution of the state at each site is simply $c^{\;}_{i,H}(t) = c^{\;}_i\;\exp{\left[-\imath 2\alpha  h_i t \; c^\dagger_i c^{\;}_i\right]}$, which do not contribute to the evolution of $m_i(t)\sim \langle \psi(0)|c^{\dagger}_{i,H}(t)c^{\;}_{i,H}(t)|\psi(0)\rangle$, thus creating frozenness. In the Nambu formalism, the effective resonance Hamiltonian can be written as
+\begin{eqnarray}
+\label{eq:heff:res:nambu}
+H^{\rm res}_{\rm eff}(J_i,h_i)  &  =   & \Psi^\dagger H^{S}_{\rm res} \Psi,\nonumber \\
+H^{S}_{\rm res} &\equiv& \begin{pmatrix}
+                 A^r & B^r\\
+                 -B^r & -A^r
+                \end{pmatrix},
+\end{eqnarray}
+in analogy with eq~\ref{eq:hst} and using the Nambu spinors in eq~\ref{eq:nambu:spinors}. The submatrices $A^r$ and $B^r$ are
+given by the nonzero elements, $A^r_{ij} = -\alpha h_i \; \delta_{ij}$, $B^r_{i,i+1}=-B^r_{i+1,i} = \alpha J j_i/2$, with all other elements vanishing. Formulating this matrix numerically and diagonalizing it yields the transformation matrix
+\begin{equation}
+U_{\rm res}        = \begin{pmatrix}         
+		    u_r & v^{\ast}_r\\
+		    v_r & u^{\ast}_r
+		    \end{pmatrix},
+\end{equation}
+with the ground state magnetization given by $m_g = 1-(2/L)\;{\rm Tr}[v_rv^\dagger_r]$. The disorder average of this quantity should match the long time averages of magnetization obtained from eq~\ref{eq:mag} using the full driven dynamics in eq~\ref{BdG_tdep:eqn}.
+
+Figure~\ref{fig:multh0:q} plots the quantity $ \langle Q \rangle = N^{-1}\sum_d Q_d$ as a function of $h_0$. The quantity $Q_d$ is given by the disorder average of
+\begin{equation}
+\label{eq:Qdis}
+ Q_d \equiv \lim_{n\rightarrow\infty}(nT)^{-1}\int^{nT}_0 {\mathrm d}t\;m_d(t),
+\end{equation}
+with $T=2\pi/\omega$, for $\alpha=0.3$ in a Ising lattice of size $L=100$ with open boundary conditions. Here, $Q_d$ is defined for the $d^{th}$ disorder realization with $L$ values of $h_i,J_i$, chosen uniformly and at random from the interval $\left(-1,+1\right)$. The average is over $N=10^3$ disorder realizations. The quantity $m_d(t)$ for the $d^{th}$ realization is obtained from eq~\ref{eq:mag} for each time $t$. The matrix $v(t)$ is obtained by numerically integrating the Bogoliubov dynamics of eqs~\ref{BdG_tdep:eqn}. The disorder fluctuations $\left[\langle Q^2 \rangle - \langle Q \rangle^2\right]^{1/2}$ are shown as error bars. The left panel plots $\langle Q \rangle$ for different values of $h_0$ while the drive frequency $\omega$ is computed via enforced resonance \textit{i.e} the system is always kept at the first zero of eq~\ref{eq:freezing}. This plot clearly shows that the disorder averaged magnetization departs from the initial magnetization substantially when $h_0$, $\omega$ are small, but 
+approaches the initial magnetization as they are increased. The time dynamics of the magnetization (after disorder averaging at each time) obtained from eq~\ref{eq:mag} and~\ref{BdG_tdep:eqn}, are shown in the inset, where $\langle m \rangle (t) $ is shown as a function of time for chosen values of $h_0$. Included in this inset is also the quench dynamics \textit{i.e} the dynamics at no drive ($h_0 \ ,\ \omega = 0$). In this case, the state of the system degrades from the equilibrium state very rapidly (in time $\tau \ll \hbar/J$). This degradation is suppressed with resonant drives as can be seen from the other inset plots, and indefinitely frozen for sufficiently rapid but resonant values of the drive parameters. Given that the initial state is chosen to be the classical ground state with all spins pointing up, the magnetization freezing at unity for large values of drive amplitude (and frequency) at resonance indicates frozenness of the entire system at the initial equilibrium state in that regime. This 
+frozenness disappears if the system is moved away from resonance, as can be seen in the right panel. Here, the system is evolved with the same parameters as in the left panel, except that the frequency $\omega$ is chosen for each $h_0$ to be away from any zeroes of the function $\mathcal{J}_0(\eta)$. In this case, the system never approaches the equilibrium state for any values of the drive parameters.
+
+\textbf{Important: Please read the paragraph below:}
+
+Figure~\ref{fig:multh0:qcomp} plots the long-time disorder average of magnetization as a function of drive frequency $\omega$. Drive amplitude $h_0$ is given by the resonance condition in eq~\ref{eq:freezing} for each $\omega$. These plots are obtained in the same manner and with the same lattice parameters as that of figure~\ref{fig:multh0:q}, and are compared with plots of the time - evolution of the effective resonance Hamiltonian in eq~\ref{eq:heff:resonance} for the same initial condition \textit{viz.} the classical ground state with all spins pointing up. Plots obtained for two values of $\alpha = 0.003$ and  $\alpha = 0.3$ are shown, with plots for the first and fourth roots of eq~\ref{eq:freezing}. For the first root, the agreement is good for very small $\alpha$, but only holds true for large $h_0,\omega$. In this case, smaller values of $h_0, \omega$, show significant deviations due to the influence of contrubutions from  terms of $\mathcal{O}(1/\omega^2) $ in eq~\ref{eq:heff:resonance}. In 
+addition, note that we had ignored the contribution of eq~\ref{eq:abeq:rhs1} in the RG flow equations~\ref{eq:rgflow}. This term is not renormalizable in the theory if the iterations in the choice of $\Gamma_i(J_i,h_i,l)$ are truncated at $i=2$ as we have done in section~\ref{sec:unitary:flows}. In order to get better quantitative comparison, we will have to iterate this procedure further, even infinite number of times. This is done for the shaken optical lattice by Mintert et al in~\cite{unitaryflow}. The flow equation should permit the identification of an effective Hamiltonian to all such orders as seen in section III of the supplementary material in~\cite{unitaryflow}. The undesired term, eq~\ref{eq:abeq:rhs1}, can be eliminated with another generator $\Gamma_3(J_i,h_i,l)\equiv \Gamma_2(J_i,h_i,l) - {\rm the\ term\ in\ question}$ and formulating flow equations for $\mathcal{K}_3$ in the same manner. However, this will introduce additional non-renormalizable terms that will have to be carried over to the 
+next 
+iteration, and so on ad infinitum. Mintert et al have done this for the shaken optical lattice, and have obtained an exact expression for $H_{\rm eff}$. However, this involves infonite series of operators that may not be easy to implement numerically in our case. Any attempt to do so will take a significant amount of time and energy. The same comparisons qualitatively hold for the fourth root as well. Despite the fact that $\beta(\eta)$ is much smaller than the previous case, the large value of $\eta$ leads to smaller values of $\omega$ for the same $h_0$, and the influence of higher orders in $1/\omega$ are more pronounced.
+\begin{figure}		
+\caption{(Color Online) The same comparison as in fig~\ref{fig:multh0:q}, except with $\omega, h_0$ fixed and $\alpha$ varied. The magnetizations are plotted against disorder strength $\alpha$ while drive frequency $\omega = 2.5$ and amplitude $h_0$ is chosen such that $\eta=4h_0/\omega$ is fixed at the fourth resonance \textit{i.e} the fourth zero of $\mathcal{J}_0(\eta)$ \textit{viz.} $\eta\simeq11.792$.
+All other parameters are the same as those in fig~\ref{fig:multh0:q}. The abscissa is plotted in a logarithmic scale. The inset plots disorder averaged magnetization $\langle m\rangle (t)$ as a function of time (in units of $\hbar/J$) for a set of chosen values of $\alpha$ as indicated in the legend.}		
+\label{fig:multalpha:q}		
+\end{figure}
+
+Figure~\ref{fig:multalpha:q} plots the same magnetization for the same lattice parameters and initial condition as a function of $\alpha$ for a fixed large value of $h_0$ with $\omega$ obtained from the resonance condition in eq~\ref{eq:freezing}. The inset plots disorder averaged magnetization as a function of time (in units of $\hbar/J$) for representative values of $\alpha$ as indicated in the legend.
+
+Figure~\ref{fig:timescales} plots the steady state timescales of the disorder averaged magnetization for the same lattice parameters and initial conditions as the previous figures. The magnetization time data is smoothened by one dimensional convolution with weights generated by gaussian windows. This removes local oscillations and keeps the long time behavior intact. The smoothened data is fitted to an exponential decay of the type
+\begin{equation}
+\label{eq:mfit}
+\langle m \rangle (t) =  \overline{m} + \left(1-\overline{m}\right)e^{-t/\tau},
+\end{equation}
+and the fitted parameter $\tau$ is taken to be the time scale in which the disorder averaged magnetization stabilized to $\overline{m}$. For sufficiently small $\omega$, the system, when driven at the resonance given by eq~\ref{eq:freezing}, the magnetization decays rapidly to $\overline{m}$, and the fitting is highly accurate. At large values of $\omega$, the decay takes longer, and approaches the limit of computational times, thus causing more fitting errors, although they are still reasonably small up to $\omega=5.0$. For large $\omega$, the data indicates a logarithmic divergence of the time scale $\tau\sim \ln{\left(\omega/\omega_c\right)}$ where the scale $\omega_c$ has been obtained by numerical $\chi^2$ fit to be $\omega_c=1.31\pm 0.1$ for the chosen parameters.
+\begin{figure}		
+\caption{(Color Online) Plot of the steady state time scale $\tau$ as a function of drive frequency $\omega$ (log-scale) with $\eta\simeq 2.4048$, $\mathcal{J}_0(\eta)=0$, and $\alpha=0.3$. All other parameters are the same as previous figures. The time-scale $\tau$ was obtained by nonlinear $\chi^2$ fit of data obtained from the numerical time evolution of the Hamiltonian in eq~\ref{H_OBC}. Uncertainties in the fitting are indicated by red error bars. The fitting formula, an exponential decay in time, is given in eq~\ref{eq:mfit}. The inset shows in dashed violet lines a sample fit of the disorder averaged magnetization $\langle m \rangle (t)$, as well as the original data in gray. The data is asymptotically fitted (shown as green line) to a logarithmic divergence with fitting function and parameters shown in the legend.}		
+\label{fig:timescales}		
+\end{figure}
+\begin{figure}[hbt]		
+\caption{(Color Online) Entanglements as per eqns~\ref{eq:vonneumann}. All unstated parameters are the same as in previous figs. The initial state is the GHZ state as detained in section~\ref{sec:intro}. The top panels are plots of the disorder averaged magnetization $\langle m \rangle (t)$, and all other panels are plots of disorder averaged entanglement measures as indicated in the ordinate labels. The lattice size is $100$ and the midpoint $m=50$.}		
+\label{fig:ents}		
+\end{figure}
+\begin{thebibliography}{10}
+\bibitem{isingrand}
+\newblock T. Caneva, R. Fazio, and G.E. Santoro, Phys. Rev. B {\bf 76}, 144427 (2007).
+\newblock DOI : \url{http://link.aps.org/doi/10.1103/PhysRevB.76.144427}.
+\bibitem{arnab1} Das A 2010 {Phys. Rev. B} {\bf 82} 172402. Bhattacharyya S, Das A
+and Dasgupta S 2012 {Phys. Rev. B} {\bf 86} 054410.
+\bibitem{mingw}
+MinGW, a contraction of "Minimalist GNU for Windows", is a minimalist development environment for native Microsoft Windows applications.
+Please see \url{http://www.mingw.org/}.
+\bibitem{cygwin}
+Cygwin is a collection of tools which provide a Linux look and feel environment for Windows. Please see \url{http://www.cygwin.com/}.
+\bibitem{gccmingw}
+\newblock To install gcc on MinGW, install MinGW~\cite{mingw}, then install the cli addons installer from \url{http://sourceforge.net/projects/mingw/files/Installer/mingw-get/}, and run
+\shellcmd{mingw-get install gcc g++ mingw32-make}
+Also see \url{http://www.mingw.org/wiki/Getting_Started}. You can also play with this \url{http://mingw-w64.sourceforge.net/} for $64-$ bitness.
+\bibitem{gcccygwin}
+\newblock To install gcc on cygwin, run the cygwin installer \url{http://www.cygwin.com/install.html} and choose gcc in the menu. 
+\bibitem{make}
+GNU Make is a tool which controls the generation of executables and other non-source files of a program from the program's source files. See
+\url{http://www.gnu.org/software/make/}
+\bibitem{latexmk}
+LaTeX-Mk is an automatic \LaTeX - compiler that uses makefiles~\cite{make} to build \LaTeX - files. See \url{http://latex-mk.sourceforge.net/}.
+\bibitem{blas}
+Basic Linear Algebra Subroutine (BLAS) is an API standard for building linear algebra libraries that perform basic linear algebra operations such as vector and matrix multiplication. See \url{http://www.netlib.org/blas/}. For a quick introduction, see \url{http://www.netlib.org/scalapack/tutorial/sld054.htm}.
+\bibitem{galassi:gsl}
+M.Galassi, J.~Davies, J.~Theiler, B.~Gough, G.~Jungman, M.~Booth, and F.~Rossi, 
+{\em GNU Scientific Library Reference Manual,  2nd edition},
+(Network Theory Ltd.,Bristol BS8 3AL, United Kingdom, 2003).
+\newblock Website:\url{http://www.gnu.org/software/gsl/manual/gsl-ref.html}
+
+\bibitem{gsl:qrdecomp}
+The QR decomposition of a matrix and the extraction of the decomposed products can be done numerically using the GNU Scientific Library. The relevant documentation can be found at~\url{http://www.gnu.org/software/gsl/manual/html_node/QR-Decomposition.html}.
+
+\bibitem{openmp}
+OpenMP (Open Multi-Processing) is an API that supports multi-platform shared memory multiprocessing programming in C, C++, and Fortran. It consists of a set of compiler directives, library routines, and environment variables that influence run-time behavior. For details, see \url{http://openmp.org/wp/}.
+
+\bibitem{gomp}
+The GOMP project has developed an implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU Compiler Collection. For details, see \url{http://gcc.gnu.org/projects/gomp/}.
+
+\bibitem{mpi}
+\newblock For a quick introduction to parallel computing and the message passing interface, see \\
+\newblock V. Eijkhout,
+{\em Introduction to High-Performance Scientific Computing},
+\newblock Web:\url{http://tacc-web.austin.utexas.edu/veijkhout/public_html/istc/istc.html}.\\
+For details, see \\
+\newblock W. Gropp, and E. Lusk,
+{\em An Introduction to MPI: Parallel Programming with the Message Passing Interface}\\
+\newblock Web:\url{http://www.mcs.anl.gov/research/projects/mpi/tutorial/mpiintro/ppframe.htm}
+
+\bibitem{openmpi}
+\newblock Open MPI: Open Source High Performance Computing
+\newblock The Open MPI Project is an open source MPI-2 implementation that is developed and maintained by a consortium of academic, research, and industry partners.
+\newblock: URL: \url{http://www.open-mpi.org/}.
+
+\bibitem{python}
+Python is a powerful dynamic high-level programming language similar to Tcl, Perl, Ruby, Scheme or Java. For details, see \url{http://www.python.org/}.
+
+\bibitem{numpy}
+NumPy is the fundamental package for scientific computing with Python. It implements array storage and object-oriented numerical class libraries as python modules. For details see \url{http://www.numpy.org}.
+
+\bibitem{scipy}
+The SciPy Stack is a collection of open source software for scientific computing in Python, and particularly a specified set of core packages. For details see \url{http://www.scipy.org}.
+
+\bibitem{matplotlib}
+Matplotlib is a mature and popular plotting package in Python. It provides publication-quality 2D plotting as well as rudimentary 3D plotting.For details see \url{http://www.matplotlib.org}.
+
+\bibitem{getopt}
+Getopt is a C library function used to parse command-line options. See \url{http://www.gnu.org/software/libc/manual/html_node/Getopt.html}. It is part of the glibc software package:\url{http://www.gnu.org/software/libc/}
+
+\bibitem{glib}
+\newblock GLib Reference manual:\url{https://developer.gnome.org/glib/}\\
+Also see \\
+\newblock T. Copeland, {\em Manage C data using the GLib collections}, (IBM:2005)
+\newblock Web:\url{http://www.ibm.com/developerworks/linux/tutorials/l-glib/}
+
+\bibitem{unitaryflow}
+A. Verdeny, A. Mielke, and F. Mintert, Phys. Rev. Lett. {\bf 111}, 175301 (2013).
+
+\bibitem{hatano}
+M. Fujinaga, and N. Hatano, J. Phys. Soc. Jpn. {\bf 76} 094001 (2007).
+
+\bibitem{osborne}
+T. J. Osborne, M. A. Nielsen, Phys. Rev. A {\bf 66}, 032110 (2002).
+
+\bibitem{lieb}
+E. Lieb, T. Schultz, and D. Mattis, Ann. Phys. {\bf 16}, 407 (1961).
+
+\bibitem{vidal}
+G. Vidal and R.F. Werner, Phys. Rev. A {\bf 65}, 032314 (2002).
+
+\bibitem{plenio}
+M.B. Plenio, Phys. Rev. Lett. {\bf 95} 090503 (2005).
+
+\bibitem{igloi}
+F. Igloi and H. Reiger, Phys. Rev. B {\bf 57} (18) 11404 (1998).
+
+\bibitem{canovi}
+E. Canovi, \textit{Quench dynamics of many-body systems}, Thesis at \url{http://www.sissa.it/statistical/tesi_phd/canovi.pdf} (2010).
+\end{thebibliography}
+
+
+\end{document}
