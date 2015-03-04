@@ -56,8 +56,8 @@ freezing, has also been observed both theoretically
 and experimentally \cite{DMF-IISER-Exp}. Dynamical many-body freezing, however, is a 
 more drastic version of dynamical localization: in the latter only the tunneling term is 
 renormalized to zero by the external drive, resulting in 
-localization in real space, while in the former the entire many-body Hamiltonian - with all its mutually
-non-commuting terms - vanishes \cite{AD-DQH}. This implies 
+localization in real space, while in the former the entire many-body Hamiltonian\textemdash with all its mutually
+non-commuting terms\textemdash vanishes \cite{AD-DQH}. This implies 
 freezing of any arbitrary initial state in the Hilbert space, rather than freezing of initial 
 states localized in real space only. Intuitively, such an unequivocal freezing of all degrees of freedom 
 of a many-body system seems possible only under very special circumstances, where certain simplicities in the structure of the Hamiltonian allow for such large-scale destructive quantum interference. Here, we demonstrate that such dynamical 
@@ -69,11 +69,12 @@ sketch the content of our analytical approach to the problem. Then we discuss ou
 results in that light. The precise condition of maximal freezing is obtained from this
 analysis. We also go beyond that, using exact numerical results for large system-sizes, averaged
 over several disorder realizations, and discuss further characteristics of the phenomenon. 
-Finally conclude with an outlook.
+Finally we conclude with an outlook.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \noindent
 %{\it The Model and the Phenomenon }
+
 Consider the following disordered one-dimensional Ising chain, subjected to a 
 sinusoidal transverse field: 
 \begin{equation}
@@ -82,7 +83,7 @@ H(t) = -\alpha J \sum_{i}^{L-1} J_i \sigma^{x}_{i}\sigma^{x}_{i+1}
 \label{H_OBC}
 \end{equation}
 \noindent where $\sigma^{\alpha}$'s ($\alpha = x,y,z$) are components of Pauli spins, $J_{i}$'s and 
-$h_{i}$ are respectively the (quenched) interactions and on-site fields - both drawn randomly 
+$h_{i}$ are, respectively, the (quenched) interactions and on-site fields\textemdash both drawn randomly 
 from a uniform distribution between $\left(-1,+1\right).$
 The transverse field is subjected to an external  drive of frequency $\omega$ (period $T = 2\pi/\omega$) 
 and amplitude $h_{0}$ (we set $\hbar = 1$).  
@@ -92,13 +93,13 @@ and amplitude $h_{0}$ (we set $\hbar = 1$).
 \begin{figure*}[t]
 \ \epsfig{file=fig1_hires.eps,width=0.95\linewidth}
 \caption{
-(Color Online) Dynamical Freezing without field disorder ($h_i=0$):  
-{\bf (a)} Exponential relaxation of the expectation value of ${m^{z}}$ with time for different
+(Color online) Dynamical freezing without field disorder ($h_i=0$):  
+{(a)} Exponential relaxation of the expectation value of ${m^{z}}$ with time for different
 values of the drive frequencies $\omega$. Unless otherwise indicated, the drive amplitude $h_{0}$ is fixed at $7.0$. 
 For certain specific values of $\omega$ (e.g., $\omega=5.07,11.64$), the relaxation is 
 tremendously slowed down. The relaxation in the 
 absence of the drive is labeled separately for comparison. The inset compares a representative sample of the numerical data (shown as points) to the curves fitted to them using Eq.~\ref{Exp-decay-fit}.  
-{\bf(b)} {\it $\tau$ vs $\omega$ for fixed $h_{0}$}: 
+{(b)} {\it $\tau$ vs $\omega$ for fixed $h_{0}$}: 
 The sharp peaks indicate dramatic enhancements of $\tau$ for certain values of $\omega$. 
 Three of the most prominent peaks are identified
 as $P_{1-3}$. The values of $\omega$ at these peaks are $P_1\approx3.24$, $P_2\approx5.07$, 
@@ -106,7 +107,7 @@ and $P_3\approx11.64$. Those
 values are identified to be the ones for which the effective Hamiltonian $H_{\rm eff}$
 (Eq.~\ref{eq:heff}) vanishes. The red dot pointed by the arrow-head represents the 
 case in absence of the drive. 
-{\bf (c)} {\it $\tau$ vs $\omega$ at fixed $\eta$}:
+{(c)} {\it $\tau$ vs $\omega$ at fixed $\eta$}:
 Comparison of enhancement of $\tau$ as $\omega$ is increased keeping $\eta = \frac{4h_{0}}{\omega}$ fixed 
 for two cases - under the freezing condition ${\mathcal J}_{0}(\eta) = 0$ ($\eta \approx 2.4048$), and away from it 
 ${\mathcal J}_{0}(\eta) \approx 0.765$
@@ -118,7 +119,7 @@ freezing condition.
 Results are for $L=100,$ averaged over $> 10^3$ 
 disorder realizations of the bonds $J_i$.
 The error-bars due to disorder-induced fluctuations are about the point size (see e.g., Fig. S1 of Suppl. Matt.),
-and hence omitted (except for (c)) to avoid cluttering.}  
+and hence omitted [except for (c)] to avoid cluttering.}  
 \label{mz-Rlx-tau}
 \end{figure*}
 
@@ -150,14 +151,14 @@ However, since $Z(0)=Z(nT)=\mathds{1}$ (identity), $H_{\rm eff}$ can be consider
 an effective time-independent Hamiltonian giving the correct stroboscopic evolution. 
 Using the above decomposition of $U(t)$ and the time-dependent Schr\"{o}dinger equation it satisfies, we get
 \begin{equation} 
-H_{\rm eff} = Z^{\dagger}(t)H(t)Z(t) -iZ^{\dagger}(t)(\partial_{t}Z(t)).
+H_{\rm eff} = Z^{\dagger}(t)H(t)Z(t) -iZ^{\dagger}(t)[\partial_{t}Z(t)].
 \label{Heff} 
 \end{equation}
 \noindent
 Deducing the exact form of $H_{\rm eff}$ from the above equation is as hard as solving the original 
 time-dependent problem. However, controlled approximations in the large $\omega$ limit can
 be obtained \cite{Mintert} using a flow equation technique \cite{Wegner,Kehrein-book} 
-which we employ here. This gives (see Suppl. Matt. for details)
+which we employ here. This yields (see Supplemental Material for details)
 \begin{multline}
 \label{eq:heff}
 H_{\rm eff}    =   -J\sum_i j^{(0)}_i\left(c^\dagger_i c^\dagger_{i+1} + \rm{h.c.}\right) \\
@@ -199,17 +200,17 @@ Now we describe our main results for the driven spin Hamiltonian $H(t)$
 and analyze it in light of the effective time-independent Hamiltonian $H_{\rm eff}$.
 To avoid cluttering, the results presented in Fig.~\ref{mz-Rlx-tau} and the main discussion
 are focused on the case where the field disorder is absent ($h_{i}=0$), the case with $h_{i}\ne 0$ is given afterwards.
-Imagine that the spins (in $H(t)$) are initially prepared in a state strongly polarized in $+z$-direction 
+Imagine that the spins [in $H(t)$] are initially prepared in a state strongly polarized in the $+z$-direction 
 and the transverse magnetization $ m^{z} = \frac{1}{L}\langle\sum_{i=1}^{L}\sigma_{i}^{z}\rangle \approx 1$. 
-(here $\langle ... \rangle$ denotes quantum expectation values, 
-and $\overline{{\mathcal O}}$ denotes average of ${\mathcal O}$ over disorder realizations).
+Here $\langle ... \rangle$ denotes quantum expectation values, 
+and $\overline{{\mathcal O}}$ denotes average of ${\mathcal O}$ over disorder realizations.
 In the absence of the drive ($h_{0}=0$), the magnetization $m^z$ relaxes with time since the random interaction terms in the Hamiltonian do not commute with it. If the drive is switched on, the characteristic time-scale of the relaxation 
 changes, depending on the drive. The relaxations of $\overline{m^{z}}$ with time for various drive 
 frequencies are shown in Fig.~\ref{mz-Rlx-tau}(a) (these results are obtained by numerically solving the 
 time-dependent Schr\"{o}dinger equation for several disorder realizations and averaging 
 over them). The relaxations (both in the absence and presence of the drive) 
 are fitted accurately with the exponential decay form 
-(inset of Fig.~\ref{mz-Rlx-tau}(a)).
+[inset of Fig.~\ref{mz-Rlx-tau}(a)].
 \begin{equation}
 \overline{\langle m^{z}(t)\rangle} =  m^{z}_{0}e^{-t/\tau},
 \label{Exp-decay-fit}
@@ -219,7 +220,7 @@ where $\tau$ is the decay constant. Our main result concerns the behavior of the
 as a function of the drive frequency $\omega$ for a given drive amplitude $h_{0}$. \\
 
 \noindent
-{\it Freezing Points:}
+{\it Freezing points:}
 The behavior is quite dramatic, as shown in Fig.~\ref{mz-Rlx-tau}(b):
 for certain values of $\omega$, the value of $\tau$ shoots up sharply 
 by orders of magnitude compared to the undriven case. This corresponds 
@@ -227,40 +228,40 @@ to the extreme slowing down (freezing) of the decay of $m^z$ visible for certain
 values of $\omega$ in Fig.~\ref{mz-Rlx-tau}(a).
 This can be explained by noting that for $h_{i}=0$ (as considered in the figure), 
 the effective Hamiltonian  $H_{\rm eff} \propto {\mathcal J}_{0}(\eta)$ to leading order in $\alpha/\omega$ 
-(Eq.~\ref{eq:heff},\ref{Renorm_fctr}) and hence $\tau \propto 1/{\mathcal J}_{0}(\eta)$ for $\omega \gg J,\alpha,$ (see Fig.~\ref{tau-vs-J0}). Thus, there is an overall renormalization of the time-scale, which can be controlled
+[Eqs.~(\ref{eq:heff}) and (\ref{Renorm_fctr})] and hence $\tau \propto 1/{\mathcal J}_{0}(\eta)$ for $\omega \gg J,\alpha,$ (see Fig.~\ref{tau-vs-J0}). Thus, there is an overall renormalization of the time-scale, which can be controlled
 by the factor ${\mathcal J}_{0}(\eta).$ Under the special condition ${\mathcal J}_{0}(\eta)=0$ (the freezing condition), $H_{\rm eff}$ 
 vanishes, indicating a large enhancement of {\it all} timescales observable in the dynamics governed by $H_{\rm eff}$.
 Interestingly, this implies that the slowing down is not only limited to $m^z(t)$, 
 or to any special initial condition. 
 For finite $\omega$, the approximation is, of course, valid only as long as 
-${\mathcal J}_{0}(\eta) \gg \alpha/\omega^{2}$ -- otherwise higher order terms in $\alpha/\omega$ 
-come into play. This results in a saturation due to the breakdown in the linear behaviour of $\tau$ with $1/{\mathcal J}_{0}(\eta)$ (Fig.~\ref{tau-vs-J0}). The saturation is also seen in the large but finite values of $\tau$ observed
+${\mathcal J}_{0}(\eta) \gg \alpha/\omega^{2}$, otherwise higher order terms in $\alpha/\omega$ 
+come into play. This results in a saturation due to the breakdown in the linear behavior of $\tau$ with $1/{\mathcal J}_{0}(\eta)$ (Fig.~\ref{tau-vs-J0}). The saturation is also seen in the large but finite values of $\tau$ observed
 at the freezing points ($P_{1,2,3}$) of Fig.~\ref{mz-Rlx-tau} (b), instead of infinite $\tau$ as suggested by 
 the vanishing of $H_{\rm eff}$ at those points.    \\
 
-\noindent{\it Beyond the Rotating-Wave Approximation:}
+\noindent{\it Beyond the rotating-wave approximation:}
 Though $\tau$ does not diverge for finite $\omega$ due to higher order corrections to 
 RWA, those corrections should vanish as $\omega \to \infty,$ 
 resulting in $\lim_{\omega\to\infty}\tau\to\infty$
 under the freezing condition ${\mathcal J}_{0}(\eta)=0.$ To characterize the dependence of $\tau$ on $\omega$ 
 under the freezing condition going beyond RWA, 
 we numerically study the variation of $\tau$ with $\omega$ fixing $\eta$ to a freezing value. 
-Fig.~\ref{mz-Rlx-tau} (c) shows that $\tau$  
+Figure~\ref{mz-Rlx-tau} (c) shows that $\tau$  
 diverges exponentially with $\omega$. The numerical results in the figure are  
 fitted well with the form $\tau(\omega)\bigr|_{{\mathcal J}_{0}(\eta)=0} =  \tau_{s}e^{{\omega}/{\omega_{s}}}-\tau_0$. 
 If $\eta$ is held fixed to some value such that ${\mathcal J}_{0}(\eta) \not\approx 0$ (away from freezing), $\tau$ does not show
-any appreciable change with increase in $\omega$ within the range considered (Fig.~\ref{mz-Rlx-tau} c). In this range,
+any appreciable change with increase in $\omega$ within the range considered [Fig.~\ref{mz-Rlx-tau} (c)]. In this range,
 $\tau$ increased by orders of magnitude for the freezing case. \\
 
 \noindent{\it The $\omega \to \infty$ limit:} 
 Note that absolute 
-freezing, \textit{i.e.} the divergence of $\tau$ in the $\omega \to \infty$ limit 
+freezing, {i.e.}, the divergence of $\tau$ in the $\omega \to \infty$ limit 
 under the freezing condition, is a counter-intuitive result. Intuitively, an infinitely 
 fast purely sinusoidal drive should simply be equivalent to the absence of the drive altogether, 
 since the driven parameters return back to themselves within no appreciable time in each cycle. 
 This would mean that $m^z$ should decay when $\omega \to \infty$ 
 as if there was no drive at all. This is indeed the case away from freezing -- in the large $\omega$
-range we considered, (see Fig~\ref{mz-Rlx-tau} c), $\tau$ remains same 
+range we considered, [see Fig~\ref{mz-Rlx-tau} (c)], $\tau$ remains same 
 as that of the undriven case as $\omega$ is increased. However, 
 under the freezing condition, $\tau$ diverges exponentially, indicating that the decay will completely
 stop due to the drive as $\omega \to \infty$. \\
@@ -270,7 +271,7 @@ stop due to the drive as $\omega \to \infty$. \\
 \begin{figure*}[t]
 \ \epsfig{file=fig3_hires.eps,width=0.7\linewidth}
 \caption{
-(Color Online) Dynamical Freezing with field disorder:  
+(Color online) Dynamical freezing with field disorder.  
 {\bf (a)} Exponential relaxation of $m^{z}$ with time for different
 values of the drive frequencies $\omega$. {\bf (b)} 
 The timescale $\tau$ of the exponential relaxation of $m^z$ vs $\omega$. 
@@ -283,7 +284,7 @@ equivalence between $H(t)$ and $H_{\rm eff}$, leading to a loss of freezing.
 Freezing begins to appear as $\omega$ is increased, as seen in the inset by the growth of $\tau$ with $\omega$
 for $\eta$ fixed to a freezing value. All the parameters are the same 
 as in Fig~\ref{mz-Rlx-tau}, except with field disorder $h_i$ switched on.
-$h_{i}$ is distributed uniformly and randomly between $\pm 1$}. 
+The $h_{i}$ are distributed uniformly and randomly between $\pm 1$}. 
 \label{mz-Rlx-tau-fdon}
 \end{figure*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -294,7 +295,7 @@ Now we briefly present the results for the case with quenched disorder in the tr
 Including randomness in the field does not alter the basic features of the phenomenon discussed above, 
 but there are some quantitative differences that we discuss here. In this case $H_{\rm eff}$
 does not vanish even to first order in $1/\omega$ at the freezing point due to the field-dependent 
-terms in Eq.~\ref{eq:heff} that scale inversely with $\omega$. Thus, we expect freezing at the roots of 
+terms in Eq.~(\ref{eq:heff}) that scale inversely with $\omega$. Thus, we expect freezing at the roots of 
 $\mathcal{J}_0(\eta)$ to last for shorter times at large $\omega$ when the field 
 disorder is on. This is qualitatively verified by our numerical simulations of the 
 exact dynamics with field disorder on. Figure~\ref{mz-Rlx-tau-fdon} shows plots of $m^z$ and the 
@@ -318,7 +319,7 @@ does not have any observable effect on $\tau.$ These results are the first of th
 dynamical localization, which is the result of large-scale destructive quantum interference induced by a 
 periodic drive, in a highly disordered system. This opens up possibilities of preserving arbitrary (even unknown) 
 quantum states of interacting qubits (Ising spins) from decaying due to unknown stray interactions.   
-Experimental realizations of bosons in disordered 1d potentials in optical lattices have already been achieved 
+Experimental realizations of bosons in disordered 1D potentials in optical lattices have already been achieved 
 experimentally~\cite{Disordered-Bosons,Bloch-Nat-Phys}. Coherent periodic drives applied to hardcore bosons
 in optical lattices, used for realizing spin chains with precise control over the Ising-like
 couplings, have also materialized~\cite{Bloch-Periodic}.
@@ -326,8 +327,7 @@ Hence, experimental observations of the freezing phenomenon seem feasible
 in a present day cold-atom laboratory.       \\
 \noindent
 {\it Acknowledgements:}
-AR thanks CSIR, India for support under Scientists' Pool Scheme No. $13(8531-$A$)/2011/$Pool, as well as the TACC, University 
-of Texas at Austin, for access to their clusters. Both authors thank Kasturi Basu, IACS Kolkata, for useful discussions.
+A.R. thanks the Council of Scientific and Industrial Research, India,  for support under Scientists' Pool Scheme No. $13(8531-$A$)/2011/$Pool. Computational resources were provided by the clusters at the Texas Advanced Computational Center, University of Texas at Austin. Both authors thank Kasturi Basu, IACS Kolkata, for useful discussions.
 
 \bibliographystyle{apsrev4-1}
 \bibliography{bib_freezing} 
