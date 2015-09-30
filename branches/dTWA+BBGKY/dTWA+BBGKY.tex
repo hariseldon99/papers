@@ -13,7 +13,7 @@
 
 \definecolor{lorenzo}{rgb}{1,.4,.3}
 \newcommand{\lp}[1]{{\color{lorenzo} #1}}
-\definecolor{analabha}{rgb}{0,0,1}
+\definecolor{analabha}{rgb}{255, 0, 255}
 \newcommand{\ar}[1]{{\color{analabha} #1}}
 \definecolor{michael}{rgb}{0,.8,.5}
 \newcommand{\mk}[1]{{\color{michael} #1}}
@@ -65,11 +65,11 @@ A numerical method, suitable for the simulation of the time evolution of quantum
 
 With the development of highly controllable platforms for quantum simulation, experimental realizations of a variety of, among others, spin lattice models have become available \cite{Simon_etal11,*Struck_etal11,*Labuhn,Britton_etal12,Schauss_etal12,*Islam_etal13,*dePaz_etal13,*Yan_etal13,*Jurcevic_etal14,*Richerme_etal14}. Many of these realization allow for the preparation of initial states far from equilibrium, and the subsequent time evolution according to a given spin Hamiltonian. For one-dimensional lattices, reliable numerical methods, often based on matrix product states, are available to complement the experimental efforts, at least up to intermediate time scales \cite{Schollwoeck11}. In two- and higher-dimensional lattices, computational methods for strongly interacting quantum systems out of equilibrium are scarce, and further development of simulation methods is much needed.
 
-In this Letter we develop a novel simulation method by combining phase space sampling of the initial state with a systematic semi-classical expansion based on the BBGKY hierarchy. The sampling scheme is inspired by a discrete Wigner representation for spin systems as introduced by Wootters \cite{Wootters87}, and was recently used in the context of dynamical simulations by Schachenmayer {\em et al.} \cite{Schachenmayer_etal15}. This scheme can to some extend account for quantum correlations, but it neglects much of their dynamics. To improve on this aspect, we combine the sampling with a systematic way of deriving time evolution equations for arbitrary $n$-point correlations, based on the BBGKY hierarchy of time evolution equations for reduced density operators \cite{Bonitz}. In the past decade or so, BBGKY techniques have been successfully applied to classical systems with long-range interactions \cite{BouchetDauxois05,*Nardini_etal12}, where the error made when truncating the infinite hierarchy of equations 
-is known to vanish with increasing system size \cite{BraunHepp77}. For this reason we expect the phase space sampling method for BBGKY trajectories to be particularly suitable for many-particle systems with long-range interactions. Benchmarking against exactly solvable models confirms this expectation, and indicates that our method is a candidate for the most accurate dynamical simulation technique on the market for higher-dimensional spin models with long-range interactions.
+In this Letter we develop a novel simulation method by combining phase space sampling of the initial state with a systematic semi-classical expansion based on the BBGKY hierarchy. The sampling scheme is inspired by a discrete Wigner representation for spin systems as introduced by Wootters \cite{Wootters87}, and was recently used in the context of dynamical simulations by Schachenmayer {\em et al.} \cite{Schachenmayer_etal15}. \ar{This scheme can to some extend account for quantum correlations, but it neglects much of their dynamics. To improve on this aspect, we combine the sampling with a systematic way of deriving time evolution equations for arbitrary $n$-point correlations, based on the BBGKY hierarchy of time evolution equations for reduced density operators}\marginpar{\ar{\tiny{'However, this scheme neglects most correlation dynamics, and thus accounts for them only for very short times. We combine the sampling \ldots reduced density operators. This leads to a significantly greater accuracy in the correlations.'}}} \cite{Bonitz}. In the past decade or so, BBGKY techniques have been successfully applied to classical systems with long-range interactions \cite{BouchetDauxois05,*Nardini_etal12}, where the error made when truncating the infinite hierarchy of equations 
+is known to vanish with increasing system size \cite{BraunHepp77}. For this reason we expect the phase space sampling method for BBGKY trajectories to be particularly suitable for many-particle systems with long-range interactions. Benchmarking against exactly solvable models confirms this expectation, and indicates that our method is a candidate for the most accurate dynamical simulation technique \ar{on the market \tiny{( replace with 'available')}} for higher-dimensional spin models with long-range interactions.
 
 
-{\em Discrete Wigner representation.---}For concreteness we use Wootters's representation of a spin-$1/2$ degree of freedom, but higher spin quantum numbers can be treated along similar lines \cite{Wootters87}. Starting point is a discrete phase space $\Gamma=\left\{(0,0),(0,1),(1,0),(1,1)\right\}$ consisting of four points is introduced, to each of which a 3-vector is associated, $\mvec{r}_{(0,0)}=(1,1,1)$, $\mvec{r}_{(0,1)}=(-1,-1,1)$, $\mvec{r}_{(1,0)}=(1,-1,-1)$, and $\mvec{r}_{(1,1)}=(-1,1,-1)$. To each phase space point $\alpha\in\Gamma$ one assigns a so-called phase space operator
+{\em Discrete Wigner representation.---}For concreteness we use Wootters's representation of a spin-$1/2$ degree of freedom, but higher spin quantum numbers can be treated along similar lines \cite{Wootters87}. \ar{Starting point is a discrete phase space $\Gamma=\left\{(0,0),(0,1),(1,0),(1,1)\right\}$ consisting of four points is introduced}\marginpar{\ar{\tiny{First, we introduce a discrete \ldots of four points\ldots}}}, to each of which a 3-vector is associated, $\mvec{r}_{(0,0)}=(1,1,1)$, $\mvec{r}_{(0,1)}=(-1,-1,1)$, $\mvec{r}_{(1,0)}=(1,-1,-1)$, and $\mvec{r}_{(1,1)}=(-1,1,-1)$. To each phase space point $\alpha\in\Gamma$ one assigns a so-called phase space operator
 \begin{equation}\label{e:Aalpha}
 A_\alpha = \tfrac{1}{2}(\id+\mvec{r}_\alpha\cdot\mvec{\sigma}),
 \end{equation}
@@ -132,7 +132,7 @@ Next, we represent the $\mathscr{A}$- and $\mathscr{C}$-operators in the basis o
 \mathscr{C}_{ij} &= \tfrac{1}{4}\sum_{\mu,\nu\in\{x,y,z\}}c_{ij}^{\mu\nu}\sigma_i^\mu\sigma_j^\nu.\label{e:Cexp}
 \end{align}
 \end{subequations}
-Inserting these expansions into the BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, we obtain time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ \cite{PaskauskasKastner12}; see the Supplemental Material for a derivation of the somewhat lengthy equations. This set of $3N(3N-2)/2$ coupled ordinary differential equations is the second main ingredient of our simulation method.
+Inserting these expansions into the BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, we obtain time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ \cite{PaskauskasKastner12}; see the Supplemental Material for a derivation of the somewhat lengthy equations. \ar{This set of $3N(3N-2)/2$}\marginpar{\ar{\tiny{correct number is $3N(3N-1)/2$}}} coupled ordinary differential equations is the second main ingredient of our simulation method.
 
 In summary, the simulation method consists of the following steps. (1) Sample phase space points $\mvec{\alpha}$ from the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}=2^{-N}\Tr\left[\rho_0 \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}(0)\right]$ of the initial state $\rho_0$. (2) Compute the corresponding initial values of the Pauli expansion coefficients $a_i^\mu=\Tr\left(\sigma_i^\mu \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}\right)$. The correlation coefficients $c_{ij}^{\mu\nu}$ are initially zero for a product state. (3) Time-evolve $a_i^\mu$ and $c_{ij}^{\mu\nu}$ according to the semi-classical equations of motion \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} in the Supplemental Material. (4) Calculate expectation values of 1- or 2-spin functions,
 %\begin{equation}
@@ -150,7 +150,7 @@ where $S_n=\left\{\mvec{\alpha}^{(1)},\dots,\mvec{\alpha}^{(n)}\right\}$ is a sa
 
 {\em Benchmarking.---}To test the accuracy of the simulation method, we benchmark the results against exact analytic and numeric calculations for simple one-dimensional model systems. The improved performance of our method is highlighted by comparing to the results of Schachenmayer, Pikovski, and Rey \cite{Schachenmayer_etal15} (abbreviated to SPR in the following).
 
-The first test case is the quantum Ising chain with long-range interactions,
+\marginpar{\ar{\tiny{Mention sampling used in all plots and captions, here and in supp. mat.}}}The first test case is the quantum Ising chain with long-range interactions,
 \begin{equation}\label{e:Ising}
 H=-J\sum_{i\neq j}\frac{\sigma_i^z\sigma_j^z}{|i-j|^\alpha} - \mvec{h}\cdot\sum_i\mvec{\sigma}_i,
 \end{equation}
@@ -163,11 +163,11 @@ Time evolution of total correlations $C^{xx}=\sum_{i,j}\langle\left\{\sigma_i^x,
 }%
 \end{figure}
 
-A magnetic field $\mvec{h}=(h,0,0)$ in \eqref{e:Ising} results in a quantum Ising chain with long-range interactions in a transverse magnetic field, and no analytic solution is known in this case. We calculated 2-spin correlation functions, and also the spin squeezing parameter
+A magnetic field $\mvec{h}=(h,0,0)$ in \eqref{e:Ising} results in a quantum Ising chain with long-range interactions in a transverse magnetic field, and no analytic solution is known in this case. We calculated 2-spin correlation functions, and also the \ar{spin squeezing parameter} {\ar{\tiny{(entanglement witness~\cite{ssq0,ssq1})}}}
 \begin{equation}\label{e:spinsqueezing}
 \xi = \sqrt{N}\min_{\mvec{n}\perp\langle\mvec{S}\rangle}\frac{\sqrt{\langle(\mvec{S}\cdot\mvec{n})^2\rangle - \langle\mvec{S}\cdot\mvec{n}\rangle^2}}{|\langle\mvec{S}\rangle||\mvec{n}|}
 \end{equation}
-where $\mvec{S}=\sum_i \mvec{\sigma}_i$, a quantity that can be measured for example in trapped-ion realizations of long-range interacting spin models. A comparison to exact diagonalization results for a chain of 11 sites, and also to the method of SPR, is shown in Fig.~\ref{f:TFIM}. For the chosen parameter values (specified in the figure caption) the spin squeezing shows pronounced spikes at certain times, which are captured by our method. From theoretical arguments we expect the approximation error to become smaller with increasing system size for exponents $\alpha$ smaller than the lattice dimension. 
+where {\ar{\tiny{($\xi$ is called the spin-squeezing parameter, and)}}} $\mvec{S}=\sum_i \mvec{\sigma}_i$, a quantity that can be measured for example in trapped-ion realizations of long-range interacting spin models. A comparison to exact diagonalization results for a chain of 11 sites, and also to the method of SPR, is shown in Fig.~\ref{f:TFIM}. For the chosen parameter values (specified in the figure caption) the spin squeezing shows pronounced spikes at certain times, which are captured by our method. From theoretical arguments we expect the approximation error to become smaller with increasing system size for exponents $\alpha$ smaller than the lattice dimension. 
 
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./Jz1hx1_Schach_alph05_N11_nt500000.jpg}
@@ -215,7 +215,7 @@ The method is particularly suitable for long-range interacting systems with smal
 
 %Acknowledge data from J.~ Schachenmayer and J.J.~Bollinger.
 
-M.\,K.\ acknowledges financial support by the National Research Foundation of South Africa via the Incentive Funding and the Competitive Programme for Rated Researchers.
+M.\,K.\ acknowledges financial support by the National Research Foundation of South Africa via the Incentive Funding and the Competitive Programme for Rated Researchers. \ar{ A.\,R.\ acknowledges Prof. Lea F. dos Santos of the Department of Physics, Stern College for Women, Yeshiva University, as well as Dr. Johannes Schachenmayer of the JILA group at the University of Colorado, Boulder, for useful discussions. A.\,R.\ also acknowledges the computational resources provided by the University of Stellenbosch's Rhasatsha HPC: \url{http://www.sun.ac.za/hpc}, as well as the Tsessebe cluster at the Centre for High Performance Computing, Cape Town: \url{http://www.chpc.ac.za/}.}
 
 
 \bibliography{LRLR}
@@ -290,7 +290,7 @@ and
 \tilde{\mvec{r}}_{(1,1)}&=(-1,0,-1).\label{e:rt4}
 \end{align}
 \end{subequations}
-While the new phase point operators $\tilde{A}_\alpha$ are equivalent to the old ones in being just simple linear combinations, the different choices are crucially different at later times due to the nonlinearity of the equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} under which the classical spin vectors \eqref{e:rt1}--\eqref{e:rt4} evolve in time.
+While the new phase point operators $\tilde{A}_\alpha$ are equivalent to the old ones in being just simple linear combinations, the different choices are crucially different at later times due to the \ar{nonlinearity of the equations}\marginpar{\ar{\tiny{Maybe move this text to the beginning of para 2, or mention it there separately.}}} \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} under which the classical spin vectors \eqref{e:rt1}--\eqref{e:rt4} evolve in time.
 
 Out of the many possible choices of sampling schemes, we have experimented, always for $\rho_0 = (\id+\sigma^x)/2$, with the following sets of vectors to define the phase space operators,
 \begin{subequations}
@@ -304,7 +304,7 @@ where
 \begin{equation}
 \tilde{\mvec{r}}_{(0,0)}^\prime=(1,1,0),\qquad \tilde{\mvec{r}}_{(1,0)}^\prime=(1,-1,0).
 \end{equation}
-Numerical results obtained with $S_{\text{1-1}}$, $S_{\text{0-1}}$, and $S_{\text{all}}$ start to differ from each other after some time, as illustrated in Fig.~\ref{f:sampling}. Whether one choice or the other performs better depends on the model studied. Fig.~\ref{f:sampling_2} shows that the sampling scheme performing better does not change by taking different sizes or different $\alpha$'s for the models taken into account. Understanding this dependence, and therefore being able to choose the optimal sampling for a given problem, is an interesting open problem.
+Numerical results obtained with $S_{\text{1-1}}$, $S_{\text{0-1}}$, and $S_{\text{all}}$ start to differ from each other after some time, as illustrated in Fig.~\ref{f:sampling}. Whether one choice or the other performs better depends on the model studied. Fig.~\ref{f:sampling_2} shows that the sampling scheme performing better does not change by taking different sizes or different $\alpha$'s for the models taken into account\marginpar{\ar{\tiny{Maybe mention here that we can compare with ED for small system sizes to optimize the sampling scheme.}}}. Understanding this dependence, and therefore being able to choose the optimal sampling for a given problem, is an interesting open problem.
 
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./XY_TF_compare_samplings.jpg}
