@@ -1,5 +1,5 @@
 \documentclass[aps,prl,showpacs,amsmath,amssymb,superscriptaddress,reprint,10pt]{revtex4-1}
-\usepackage{draftwatermark}
+%\usepackage{draftwatermark}
 \usepackage{bm}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -9,8 +9,13 @@
 \usepackage{bbm}
 \usepackage{mathrsfs} %Fancy letters 
 %\usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue]{hyperref}
-\usepackage[colorlinks=true,breaklinks=true,allcolors=blue]{hyperref}
+\usepackage{bibunits}
 
+\usepackage[colorlinks=true,breaklinks=true,allcolors=blue]{hyperref}
+\usepackage{url}
+
+\definecolor{johannes}{rgb}{.5,1,.5}
+\newcommand{\js}[1]{{\color{johannes} #1}}
 \definecolor{lorenzo}{rgb}{1,.4,.3}
 \newcommand{\lp}[1]{{\color{lorenzo} #1}}
 \definecolor{analabha}{rgb}{255, 0, 255}
@@ -33,10 +38,12 @@
 
 \DeclareMathOperator{\Tr}{{Tr}}
 
-
-%\allowdisplaybreaks
+\allowdisplaybreaks
 
 \begin{document}
+
+\defaultbibliography{LRLR}
+\defaultbibliographystyle{plain}
 
 \title{Simulation of Quantum Spin Dynamics by Phase Space Sampling of BBGKY Trajectories}  
 
@@ -47,7 +54,7 @@
 \affiliation{National Institute for Theoretical Physics (NITheP), Stellenbosch 7600, South Africa} 
 
 \author{Michael Kastner} 
-%\email{kastner@sun.ac.za} 
+\email{kastner@sun.ac.za} 
 \affiliation{National Institute for Theoretical Physics (NITheP), Stellenbosch 7600, South Africa} 
 \affiliation{Institute of Theoretical Physics,  University of Stellenbosch, Stellenbosch 7600, South Africa}
 
@@ -62,14 +69,17 @@ A numerical method, suitable for the simulation of the time evolution of quantum
 \maketitle 
 %------------------------------------------------
 
-
+\begin{bibunit}
 With the development of highly controllable platforms for quantum simulation, experimental realizations of a variety of, among others, spin lattice models have become available \cite{Simon_etal11,*Struck_etal11,*Labuhn,Britton_etal12,Schauss_etal12,*Islam_etal13,*dePaz_etal13,*Yan_etal13,*Jurcevic_etal14,*Richerme_etal14}. Many of these realization allow for the preparation of initial states far from equilibrium, and the subsequent time evolution according to a given spin Hamiltonian. For one-dimensional lattices, reliable numerical methods, often based on matrix product states, are available to complement the experimental efforts, at least up to intermediate time scales \cite{Schollwoeck11}. In two- and higher-dimensional lattices, computational methods for strongly interacting quantum systems out of equilibrium are scarce, and further development of simulation methods is much needed.
 
-In this Letter we develop a novel simulation method by combining phase space sampling of the initial state with a systematic semi-classical expansion based on the BBGKY hierarchy. The sampling scheme is inspired by a discrete Wigner representation for spin systems as introduced by Wootters \cite{Wootters87}, and was recently used in the context of dynamical simulations by Schachenmayer {\em et al.} \cite{Schachenmayer_etal15}. \ar{This scheme can to some extend account for quantum correlations, but it neglects much of their dynamics. To improve on this aspect, we combine the sampling with a systematic way of deriving time evolution equations for arbitrary $n$-point correlations, based on the BBGKY hierarchy of time evolution equations for reduced density operators}\marginpar{\ar{\tiny{'However, this scheme neglects most correlation dynamics, and thus accounts for them only for very short times. We combine the sampling \ldots reduced density operators. This leads to a significantly greater accuracy in the correlations.'}}} \cite{Bonitz}. In the past decade or so, BBGKY techniques have been successfully applied to classical systems with long-range interactions \cite{BouchetDauxois05,*Nardini_etal12}, where the error made when truncating the infinite hierarchy of equations 
-is known to vanish with increasing system size \cite{BraunHepp77}. For this reason we expect the phase space sampling method for BBGKY trajectories to be particularly suitable for many-particle systems with long-range interactions. Benchmarking against exactly solvable models confirms this expectation, and indicates that our method is a candidate for the most accurate dynamical simulation technique \ar{on the market \tiny{( replace with 'available')}} for higher-dimensional spin models with long-range interactions.
+In this Letter we develop a novel simulation method by combining phase space sampling of the initial state with a systematic semi-classical expansion based on the BBGKY hierarchy. The sampling scheme is inspired by a discrete Wigner representation for spin systems as introduced by Wootters \cite{Wootters87}, and was recently used in the context of dynamical simulations by Schachenmayer {\em et al.} \cite{Schachenmayer_etal15}. %This scheme can to some extend account for quantum correlations, but it neglects much of their dynamics. To improve on this aspect, we combine the sampling with a systematic way of deriving time evolution equations for arbitrary $n$-point correlations, based on the BBGKY hierarchy of time evolution equations for reduced density operators}
+{However, this scheme neglects most correlation dynamics}\js{ ... This sounds a bit vague. I know what you mean: The classical equations don’t propagate correlations, however, even in the DTWA there is still some 'dynamics of correlations' and this might confuse people. How about something like 'this scheme only incorporates quantum fluctuations on the level of the initial state and thus reproduces dynamics only on short time-scale' or something similar...}, \mk{and thus accounts for them only for very short times. We combine the sampling with a systematic way of deriving time evolution equations for arbitrary $n$-point correlations, based on the BBGKY hierarchy of time evolution equations for reduced density operators \cite{Bonitz}.} %This leads to a significantly greater accuracy in the correlations. 
+In the past decade or so, BBGKY techniques have been successfully applied to classical systems with long-range interactions \cite{BouchetDauxois05,*Nardini_etal12}, where the error made when truncating the infinite hierarchy of equations 
+is known to vanish with increasing system size \cite{BraunHepp77}. For this reason we expect the phase space sampling method for BBGKY trajectories to be particularly suitable for many-particle systems with long-range interactions. Benchmarking against exactly solvable models \mk{indeed confirms that correlations can be computed to a significantly greater accuracy, and indicates that our method is a candidate for the most accurate dynamical simulation technique available} for higher-dimensional spin models with long-range interactions.
 
 
-{\em Discrete Wigner representation.---}For concreteness we use Wootters's representation of a spin-$1/2$ degree of freedom, but higher spin quantum numbers can be treated along similar lines \cite{Wootters87}. \ar{Starting point is a discrete phase space $\Gamma=\left\{(0,0),(0,1),(1,0),(1,1)\right\}$ consisting of four points is introduced}\marginpar{\ar{\tiny{First, we introduce a discrete \ldots of four points\ldots}}}, to each of which a 3-vector is associated, $\mvec{r}_{(0,0)}=(1,1,1)$, $\mvec{r}_{(0,1)}=(-1,-1,1)$, $\mvec{r}_{(1,0)}=(1,-1,-1)$, and $\mvec{r}_{(1,1)}=(-1,1,-1)$. To each phase space point $\alpha\in\Gamma$ one assigns a so-called phase space operator
+{\em Discrete Wigner representation.---}For concreteness we use Wootters's representation of a spin-$1/2$ degree of freedom, but higher spin quantum numbers can be treated along similar lines \cite{Wootters87}. Starting point is a discrete phase space $\Gamma=\left\{(0,0),(0,1),(1,0),(1,1)\right\}$ consisting of four points, %\marginpar{\ar{\tiny{First, we introduce a discrete \ldots of four points\ldots}}}, 
+to each of which a 3-vector is associated, $\mvec{r}_{(0,0)}=(1,1,1)$, $\mvec{r}_{(0,1)}=(-1,-1,1)$, $\mvec{r}_{(1,0)}=(1,-1,-1)$, and $\mvec{r}_{(1,1)}=(-1,1,-1)$. To each phase space point $\alpha\in\Gamma$ one assigns a so-called phase \ar{point} operator
 \begin{equation}\label{e:Aalpha}
 A_\alpha = \tfrac{1}{2}(\id+\mvec{r}_\alpha\cdot\mvec{\sigma}),
 \end{equation}
@@ -81,7 +91,7 @@ where the weights $w_\alpha=\Tr(\rho A_\alpha)/2$ form a quasi-probability distr
 \begin{equation}
 \rho_0=\sum_{\alpha_1,\dotsc,\alpha_N\in\Gamma}w_{\alpha_1}\cdots w_{\alpha_N}A_{\alpha_1}\otimes\cdots\otimes A_{\alpha_N}.
 \end{equation}
-If the weights $w_i$ calculated from $\rho_0$ happen to be all nonnegative, we can sample from this initial state by drawing $N$-spin phase space points $\mvec{\alpha}=(\alpha_1,\dotsc,\alpha_N)\in\Gamma^N$ according to the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}$. In practice we use a slightly different, and superior, sampling scheme, which is detailed in the Supplemental Material. This sampling, which is inspired by Ref.~\cite{Schachenmayer_etal15}, is the first main ingredient of our numerical scheme.
+If the weights $w_i$ calculated from $\rho_0$ happen to be all nonnegative, we can sample from this initial state by drawing $N$-spin phase space points $\mvec{\alpha}=(\alpha_1,\dotsc,\alpha_N)\in\Gamma^N$ according to the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}$. In practice we use a slightly different, and superior, sampling scheme, which is detailed in \cite{Note1}. This sampling, which is inspired by Ref.~\cite{Schachenmayer_etal15}, is the first main ingredient of our numerical scheme.
 
 {\em BBGKY evolution equations.---}As a second ingredient we derive semi-classical evolution equations with which to propagate the sampled initial phase space points. To this purpose we write the time-evolution of the density operator as
 \begin{equation}\label{e:rho_t}
@@ -101,7 +111,7 @@ Here, $\Tr_{\not{\,i}}$ denotes a partial trace over all of the tensor product H
 \begin{equation}\label{e:Hgen}
 H_{1\dotsc N} = \sum_i H_i + \sum_{i<j}H_{ij}
 \end{equation}
-with on-site and pair interactions can be recast in the form of a hierarchy of equations for the $n$-spin reduced $\mathscr{A}$-operators (see Supplemental Material for details). For the long-range interacting systems we intend to simulate, we expect deviations from mean-field to be small. This suggests to separate the $\mathscr{A}$-operators into product and correlated parts by means of a cluster expansion,
+with on-site and pair interactions can be recast in the form of a hierarchy of equations for the $n$-spin reduced $\mathscr{A}$-operators \cite{Note1}. For the long-range interacting systems we intend to simulate, we expect deviations from mean-field to be small. This suggests to separate the $\mathscr{A}$-operators into product and correlated parts by means of a cluster expansion,
 \begin{subequations}
 \begin{align}
 \mathscr{A}_{ij}&=\mathscr{A}_i \mathscr{A}_j+\mathscr{C}_{ij},\label{e:cluster1}\\
@@ -132,9 +142,9 @@ Next, we represent the $\mathscr{A}$- and $\mathscr{C}$-operators in the basis o
 \mathscr{C}_{ij} &= \tfrac{1}{4}\sum_{\mu,\nu\in\{x,y,z\}}c_{ij}^{\mu\nu}\sigma_i^\mu\sigma_j^\nu.\label{e:Cexp}
 \end{align}
 \end{subequations}
-Inserting these expansions into the BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, we obtain time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ \cite{PaskauskasKastner12}; see the Supplemental Material for a derivation of the somewhat lengthy equations. \ar{This set of $3N(3N-2)/2$}\marginpar{\ar{\tiny{correct number is $3N(3N-1)/2$}}} coupled ordinary differential equations is the second main ingredient of our simulation method.
+Inserting these expansions into the BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, we obtain time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ \cite{PaskauskasKastner12}; see \cite{Note1} for a derivation of the somewhat lengthy equations. This set of $3N(3N-1)/2$ coupled ordinary differential equations is the second main ingredient of our simulation method.
 
-In summary, the simulation method consists of the following steps. (1) Sample phase space points $\mvec{\alpha}$ from the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}=2^{-N}\Tr\left[\rho_0 \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}(0)\right]$ of the initial state $\rho_0$. (2) Compute the corresponding initial values of the Pauli expansion coefficients $a_i^\mu=\Tr\left(\sigma_i^\mu \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}\right)$. The correlation coefficients $c_{ij}^{\mu\nu}$ are initially zero for a product state. (3) Time-evolve $a_i^\mu$ and $c_{ij}^{\mu\nu}$ according to the semi-classical equations of motion \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} in the Supplemental Material. (4) Calculate expectation values of 1- or 2-spin functions,
+In summary, the simulation method consists of the following steps. (1) Sample phase space points $\mvec{\alpha}$ from the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}=2^{-N}\Tr\left[\rho_0 \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}(0)\right]$ of the initial state $\rho_0$. (2) Compute the corresponding initial values of the Pauli expansion coefficients $a_i^\mu=\Tr\left(\sigma_i^\mu \mathscr{A}_{1\dotsc N}^{\alpha_1\dotsc\alpha_N}\right)$. The correlation coefficients $c_{ij}^{\mu\nu}$ are initially zero for a product state. (3) Time-evolve $a_i^\mu$ and $c_{ij}^{\mu\nu}$ according to the semi-classical equations of motion \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} in \cite{Note1}. (4) Calculate expectation values of 1- or 2-spin functions,
 %\begin{equation}
 %\left\langle\sigma_i^\mu\right\rangle \approx \sum_{\mvec{\alpha}}a_i^\mu,\qquad
 %\left\langle\sigma_i^\mu\sigma_j^\nu\right\rangle - \left\langle\sigma_i^\mu\right\rangle\left\langle\sigma_j^\nu\right\rangle \approx \sum_{\mvec{\alpha}}c_{ij}^{\mu\nu},
@@ -148,33 +158,35 @@ In summary, the simulation method consists of the following steps. (1) Sample ph
 where $S_n=\left\{\mvec{\alpha}^{(1)},\dots,\mvec{\alpha}^{(n)}\right\}$ is a sample of $n$ phase space points drawn from the probability distribution $w_{\alpha_1}\cdots w_{\alpha_N}$.
 
 
-{\em Benchmarking.---}To test the accuracy of the simulation method, we benchmark the results against exact analytic and numeric calculations for simple one-dimensional model systems. The improved performance of our method is highlighted by comparing to the results of Schachenmayer, Pikovski, and Rey \cite{Schachenmayer_etal15} (abbreviated to SPR in the following).
-
-\marginpar{\ar{\tiny{Mention sampling used in all plots and captions, here and in supp. mat.}}}The first test case is the quantum Ising chain with long-range interactions,
-\begin{equation}\label{e:Ising}
-H=-J\sum_{i\neq j}\frac{\sigma_i^z\sigma_j^z}{|i-j|^\alpha} - \mvec{h}\cdot\sum_i\mvec{\sigma}_i,
-\end{equation}
-where $J$ is a coupling constant and $\mvec{h}$ the magnetic field vector. The exponent $\alpha\geq0$ controls the range of the interactions, and open boundary conditions are used. In the case of a longitudinal magnetic field $\mvec{h}=(0,0,h)$, exact analytic results are known for the time-evolution of 1-spin \cite{Emch66,*Radin70,*Kastner11,*Kastner12} and 2-spin functions \cite{vdWorm_etal13,*FossFeigHazzardBollingerRey13,*KastnerVdWorm}. In the Supplemental Material we show that, for this and also more general models, the middle equations in \eqref{e:1spin} and \eqref{e:2spin} agree with the exact analytic solution, and hence the estimates on the right-hand side of those equations become exact in the limit of large sample size. In this sense, our method is numerically exact for the Ising model in a longitudinal field. A comparison with the method of SPR, which shows deviations from the exact result, is shown in Fig.~\ref{f:Ising}.
-
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./Ising_Schach_N100_alph_0_3_nt10000.jpg}
 \caption{\label{f:Ising}%
-Time evolution of total correlations $C^{xx}=\sum_{i,j}\langle\left\{\sigma_i^x,\sigma_j^x\right\}\rangle/2$ (where the curly brackets denote an anticommutator) for a long-range Ising chain of $100$ sites in a longitudinal field of strength $h=0$ with long-range exponent $\alpha=0$ (left) and $\alpha=3$ (right). As shown analytically in the Supplemental Material, our method recovers the exact solution (black) in the limit of an infinite sample. The only error is therefore of a statistical nature due to the finite sample size $n=10000$ (red crosses). The method of SPR (blue dots) shows systematic deviations from the exact result.
+Time evolution of total correlations $C^{xx}=\sum_{i,j}\langle\left\{\sigma_i^x,\sigma_j^x\right\}\rangle/2$ (where the curly brackets denote an anticommutator) for a long-range Ising chain of $100$ sites in a longitudinal field of strength $h=0$ with long-range exponent $\alpha=0$ (left) and $\alpha=3$ (right). As shown analytically in \cite{Note1}, our method recovers the exact solution (black) in the limit of an infinite sample. The only error is therefore of a statistical nature due to the finite sample size $n=10000$ (red crosses). The method of SPR (blue dots) shows systematic deviations from the exact result.
 }%
 \end{figure}
 
-A magnetic field $\mvec{h}=(h,0,0)$ in \eqref{e:Ising} results in a quantum Ising chain with long-range interactions in a transverse magnetic field, and no analytic solution is known in this case. We calculated 2-spin correlation functions, and also the \ar{spin squeezing parameter} {\ar{\tiny{(entanglement witness~\cite{ssq0,ssq1})}}}
-\begin{equation}\label{e:spinsqueezing}
-\xi = \sqrt{N}\min_{\mvec{n}\perp\langle\mvec{S}\rangle}\frac{\sqrt{\langle(\mvec{S}\cdot\mvec{n})^2\rangle - \langle\mvec{S}\cdot\mvec{n}\rangle^2}}{|\langle\mvec{S}\rangle||\mvec{n}|}
+
+{\em Benchmarking.---}To test the accuracy of the simulation method, we benchmark the results against exact analytic and numeric calculations for simple one-dimensional model systems. The improved performance of our method is highlighted by comparing to the results of Schachenmayer, Pikovski, and Rey \cite{Schachenmayer_etal15} (abbreviated to SPR in the following).
+
+The first test case is the quantum Ising chain with long-range interactions,
+\begin{equation}\label{e:Ising}
+H=-J\sum_{i\neq j}\frac{\sigma_i^z\sigma_j^z}{|i-j|^\alpha} - \mvec{h}\cdot\sum_i\mvec{\sigma}_i,
 \end{equation}
-where {\ar{\tiny{($\xi$ is called the spin-squeezing parameter, and)}}} $\mvec{S}=\sum_i \mvec{\sigma}_i$, a quantity that can be measured for example in trapped-ion realizations of long-range interacting spin models. A comparison to exact diagonalization results for a chain of 11 sites, and also to the method of SPR, is shown in Fig.~\ref{f:TFIM}. For the chosen parameter values (specified in the figure caption) the spin squeezing shows pronounced spikes at certain times, which are captured by our method. From theoretical arguments we expect the approximation error to become smaller with increasing system size for exponents $\alpha$ smaller than the lattice dimension. 
+where $J$ is a coupling constant and $\mvec{h}$ the magnetic field vector. The exponent $\alpha\geq0$ controls the range of the interactions, and open boundary conditions are used. In the case of a longitudinal magnetic field $\mvec{h}=(0,0,h)$, exact analytic results are known for the time-evolution of 1-spin \cite{Emch66,*Radin70,*Kastner11,*Kastner12} and 2-spin functions \cite{vdWorm_etal13,*FossFeigHazzardBollingerRey13,*KastnerVdWorm}. In \cite{Note1} we show that, for this and also more general models, the middle equations in \eqref{e:1spin} and \eqref{e:2spin} agree with the exact analytic solution, and hence the estimates on the right-hand side of those equations become exact in the limit of large sample size. In this sense, our method is numerically exact for the Ising model in a longitudinal field. A comparison with the method of SPR, which shows deviations from the exact result, is shown in Fig.~\ref{f:Ising}.
 
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./Jz1hx1_Schach_alph05_N11_nt500000.jpg}
 \caption{\label{f:TFIM}%
-Time evolution of a long-range Ising chain of 11 sites with $\alpha=1/2$ in a transverse field of strength $h=1$. We compare exact diagonalization results (black line), the method of SPR (blue dots), and our method (red crosses) for sample sizes $n=5\times10^5$. Left: Total correlations $C^{yy}$. Right: Decibel spin squeezing as obtained from \eqref{e:spinsqueezing}. While not an exact match, our method captures the sharp spikes in the spin squeezing.
+Time evolution of a long-range Ising chain of 11 sites with $\alpha=1/2$ in a transverse field of strength $h=1$. We compare exact diagonalization results (black line), the method of SPR (blue dots), and our method with $S_{1-0}$ sampling \cite{Note1} (red crosses) for sample sizes $n=5\times10^5$. Left: Total correlations $C^{yy}$. Right: Decibel spin squeezing as obtained from \eqref{e:spinsqueezing}. While not an exact match, our method captures the sharp spikes in the spin squeezing.
 }%
 \end{figure}
+
+A magnetic field $\mvec{h}=(h,0,0)$ in \eqref{e:Ising} results in a quantum Ising chain with long-range interactions in a transverse magnetic field, and no analytic solution is known in this case. \mk{We calculated 2-spin correlation functions, and also the spin squeezing parameter~\cite{Wineland_etal92,*Ma_etal11}
+\begin{equation}\label{e:spinsqueezing}
+\xi = \sqrt{N}\min_{\mvec{n}\perp\langle\mvec{S}\rangle}\frac{\sqrt{\langle(\mvec{S}\cdot\mvec{n})^2\rangle - \langle\mvec{S}\cdot\mvec{n}\rangle^2}}{|\langle\mvec{S}\rangle||\mvec{n}|}
+\end{equation}
+where $\mvec{S}=\sum_i \mvec{\sigma}_i$. Spin squeezing \ar{relies on the fact that the underlying state is entangled}, and can be measured for example in trapped-ion realizations of long-range interacting spin models \cite{}.} %I have asked John Bollinger for a suitable reference.
+A comparison to exact diagonalization results for a chain of 11 sites, and also to the method of SPR, is shown in Fig.~\ref{f:TFIM}. For the chosen parameter values (specified in the figure caption) the spin squeezing shows pronounced spikes at certain times, which are captured by our method. From theoretical arguments we expect the approximation error to become smaller with increasing system size for exponents $\alpha$ smaller than the lattice dimension. 
 
 For further benchmarking, we consider the quantum $XX$ chain with long-range interactions,
 \begin{equation}\label{e:XY}
@@ -185,46 +197,56 @@ Here we simulate chains of 100 sites and compare to numerical results from densi
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./Jx05Jy05_Schach_N100_alph3_nt100000.jpg}
 \caption{\label{f:XX}%
-Time evolution of a long-range $XX$ chain of 100 sites with $\alpha=3$. We compare DMRG results (black line), the method of SPR (blue dots), and our method (red crosses) for sample sizes $n=10^5$. Left: Total spin $S^x=\sum_i\sigma_i^x$. Right: Decibel spin squeezing as obtained from \eqref{e:spinsqueezing}, where the results of our method are virtually indistinguishable from the DMRG data.
+Time evolution of a long-range $XX$ chain of 100 sites with $\alpha=3$. We compare DMRG results (black line), the method of SPR (blue dots), and our method with $S_{1-1}$ sampling \cite{Note1} (red crosses) for sample sizes $n=10^5$. Left: Total spin $S^x=\sum_i\sigma_i^x$. Right: Decibel spin squeezing as obtained from \eqref{e:spinsqueezing}, where the results of our method are virtually indistinguishable from the DMRG data.
 }%
 \end{figure}
 
 
-{\em Parameter dependencies.---}\mk{If we have space, otherwise in the Supplemental Material.}
-
-
-{\em Application to two-dimensional ion crystals.---}While one-dimensional models are suitable for benchmarking our method, it is two- and higher-dimensional systems, where DMRG calculations are not feasible, for which our method is particularly suited. We illustrate its strength by calculating spin squeezing in a transverse-field Ising model on a two-dimensional lattice with hundreds of sites, as it can be emulated with ions in a Penning trap \cite{Britton_etal12}. The Coulomb repulsion between the ions approximately leads to a triangular lattice structure, although distortions occur close to the boundary. Transverse lattice oscillations mediate interactions between hyperfine states of the ions, leading to effective Ising spins with long-range couplings, like in a two-dimensional version of the Hamiltonian \eqref{e:Ising}. The effective magnetic field $\mvec{h}$ in the experiment in \cite{Britton_etal12} can be orientated arbitrarily. For a longitudinal field $\mvec{h}=(0,0,h)$ exact results are available 
-and have been used for benchmarking. Here we consider the long-range Ising model with $N=300$ lattice sites in a transverse field $\mvec{h}=(h,0,0)$, where no other good methods are available for calculating how spin squeezing evolves in time. The coupling coefficients $J_{ij}$ are computed numerically by a method outlined in \cite{Britton_etal12}. They decay approximately like $J_{ij}\propto|i-j|^{1/2}$ for the experimentally realistic parameters we have chosen. Numerical results for total correlations and decibel spin squeezing are shown in Fig.~\ref{f:2d}. We believe that computations of this kind will prove useful for locating interesting regimes for future experiments, while experimental data can in turn be used to assess the performance of the numerics.
+{\em Parameter dependence.---}Based on the theoretical reasoning outlined in the introduction, we expect the simulation method to perform best for systems with long-range interactions. To test this prediction, we studied the accuracy of the simulation results of the decibel spin squeezing for various values of the long-range exponent $\alpha$ by comparing numerical to exact results. We then extracted the time scale $\tau$ up to which the deviation from the exact result is smaller than one. In Fig.~\ref{f:alpha_dependence} we plot $\tau$, rescaled by the mean energy per lattice site $\mathscr{N}=\sum_{i\neq j} (J_{ij}^x+J_{ij}^x+J_{ij}^z)/N$, as a function of $\alpha$. While a trend towards better performance for small $\alpha$ is visible, the $\alpha$ dependence is rather weak, indicating that the method performs robustly over a broad range of $\alpha$-values. 
 
 \begin{figure}\centering
-%\includegraphics[width=\linewidth]{./.eps}
-\caption{\label{f:2d}%
-Time evolution of\dots
+\includegraphics[width=\linewidth]{./Compare_XY_tau_alpha_N11_dtwa2o_ED_rescaled.jpg}
+\caption{\label{f:alpha_dependence}%
+Time scale $\tau$ until which the numerically simulated decibel spin squeezing differs from the exact result by less than one. To make the data for different $\alpha$ comparable, $\tau$ is rescaled by the mean energy per lattice site $\mathscr{N}$. The various symbols and colors denote different sampling schemes as defined in \eqref{e:S11}--\eqref{e:Sall}, $S_{\text{1-1}}$ (black), $S_{\text{0-1}}$ (red), and $S_{\text{all}}$ (green). Left: $XX$ chain of length $N=11$ with $J=-1/2$. Right: Ising chain of length $N=11$ in a transverse field $h=1$ with coupling $J=-1$.
 }%
 \end{figure}
 
 
-{\em Conclusions.---}We have introduced a numerical method for simulating the time evolution of quantum spin models. The method uses sampling from a discrete phase space representation of the initial state, as recently introduced in \cite{Schachenmayer_etal15}. This ingredient is combined with the time evolution equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} obtained from the BBGKY hierarchy, which explicitly account for the time evolution of connected correlations. Benchmarking against exact results confirms that this leads to a significantly improved accuracy when computing correlation functions, as illustrated in Figs.~\ref{f:Ising}--\ref{f:XX}. The numerical cost scales like $\mathscr{O}(N^2)$ with the lattice size $N$. Lattices with $N=\mathscr{O}(10^4)$ are manageable on a personal computer, and $N=\mathscr{O}(10^6)$ should be possible on a supercomputer. Going to higher orders of the BBGKY hierarchy allows for a systematic refinement of the method, but results in a less favorable 
+{\em Application to two-dimensional ion crystals.---}While one-dimensional models are suitable for benchmarking our method, it is two- and higher-dimensional systems, where DMRG calculations are not feasible, for which our method is particularly suited. We illustrate its strength by calculating spin squeezing in a transverse-field Ising model on a two-dimensional lattice with hundreds of sites, as it can be emulated with ions in a Penning trap \cite{Britton_etal12}. The Coulomb repulsion between the ions approximately leads to a triangular lattice structure, although distortions occur close to the boundary [see Fig.~\ref{f:2d} (left)]. Transverse lattice oscillations mediate interactions between hyperfine states of the ions, leading to effective Ising spins with long-range couplings, like in a two-dimensional version of the Hamiltonian \eqref{e:Ising}. The effective magnetic field $\mvec{h}$ in the experiment in \cite{Britton_etal12} can be orientated arbitrarily. For a longitudinal field $\mvec{h}=(0,0,h)$ exact results are available 
+and have been used for benchmarking. Here we consider the long-range Ising model with $N=217$ lattice sites in a transverse field $\mvec{h}=(h,0,0)$, where no other good methods are available for calculating how spin squeezing evolves in time. The coupling coefficients $J_{ij}$ are computed numerically by a method outlined in \cite{Britton_etal12}. They decay approximately like $J_{ij}\propto|i-j|^{0.7}$ for the experimentally realistic parameters chosen. Numerical results for decibel spin squeezing are shown in Fig.~\ref{f:2d} (right). We believe that computations of this kind will prove useful for locating interesting regimes for future experiments, while experimental data can in turn be used to assess the performance of the numerics.
+
+
+{\em Conclusions.---}We have introduced a numerical method for simulating the time evolution of quantum spin models. The method uses sampling from a discrete phase space representation of the initial state, as recently introduced in \cite{Schachenmayer_etal15}. This ingredient is combined with the time evolution equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} obtained from the BBGKY hierarchy, which explicitly account for the time evolution of connected correlations. Benchmarking against exact results confirms that this leads to a significantly improved accuracy when computing correlation functions, as illustrated in Figs.~\ref{f:Ising}--\ref{f:XX}. The numerical cost scales like $\mathscr{O}(N^2)$ with the lattice size $N$. \ar{Lattices with $N=\mathscr{O}(10^2)$ are manageable on a personal computer, and $N=\mathscr{O}(10^3)$ can be simulated using distributed high performance computing}. Going to higher orders of the BBGKY hierarchy allows for a systematic refinement of the method, but results in a less favorable 
 scaling of the numerical cost. While 
-the method is presented for spin-$1/2$ degrees of freedom, both, the phase space sampling and the BBGKY time evolution equations can be readily generalized to higher spin quantum numbers.
+the method is presented for spin-$1/2$ degrees of freedom, both, the phase space sampling and the BBGKY time evolution equations can be readily generalized to higher spin quantum numbers. \js{I would be curious if you have some actual ideas about this? We tried a bit to look at higher spin discrete Wigner functions some time ago, but didn’t find it to be straightforward.}
 
-The method is particularly suitable for long-range interacting systems with small exponents $\alpha$, and can be applied in arbitrary lattice dimension. Of particular interest are applications for two- and higher-dimensional lattices, where established methods like DMRG do not work. An important open question concerns the various sampling schemes discussed in the Supplemental Material. These schemes affect the accuracy of the numerics, but a better understanding is required in order to be able to choose the optimal scheme for a given problem.
+\begin{figure}\centering
+\includegraphics[height=0.4\linewidth]{./Crystal.jpg}
+\includegraphics[height=0.43\linewidth]{./bollinger217.jpg}
+\caption{\label{f:2d}%
+Left: Graph representing a two-dimensional crystal consisting of $N=217$ ions, as it forms spontaneously in the external trapping potential of \cite{Britton_etal12}. The crystal structure is approximately triangular, with deformations close to the boundary. Lattice spacings are of the order of $15\mathrm{\mu m}$. The couplings $J_{ij}$, as indicated by the graph edges, are nonvanishing between all pairs $i$, $j$ of ions, decaying approximately like $J_{ij}\propto|i-j|^{0.7}$. Right: Time evolution of the decibel spin squeezing \eqref{e:spinsqueezing} for an Ising model on such a graph, with couplings $J_{ij}$ and a transverse magnetic field of strength $h=1$. For the numerical calculation we used the $S_{1-0}$ sampling and $n=4\times10^4$ initial states. 
+}%
+\end{figure}
+
+The method is particularly suitable for long-range interacting systems with small exponents $\alpha$, and can be applied in arbitrary lattice dimension. Of particular interest are applications for two- and higher-dimensional lattices, where established methods like DMRG do not work. An important open question concerns the various sampling schemes discussed in \cite{Note1}. These schemes affect the accuracy of the numerics, but a better understanding is required in order to be able to choose the optimal scheme for a given problem. \ar{ Should we drive home the fact that dtwa is computationally much faster than DMRG due to mimimal interprocess communications, or is this too obvious to mention?}
 
 
-%The authors have profited from useful discussion with \dots
+\mk{The authors acknowledge helpful discussions with Jens Eisert, Lea Santos and Johannes Schachenmayer. John Bollinger and Joe Britton are gratefully acknowledged for providing the coupling coefficients used in the two-dimensional simulations, and Johannes Schachenmayer for the DMRG data used in Fig.~\ref{f:XX}.}
+%\ar{ A.\,R.\ acknowledges Prof. Lea F. dos Santos of the Department of Physics, Stern College for Women, Yeshiva University, as well as Dr. Johannes Schachenmayer of the JILA group at the University of Colorado, Boulder, for useful discussions. 
+\mk{A.\,R.\ acknowledges the computational resources provided by the University of Stellenbosch's Rhasatsha HPC, %: \url{http://www.sun.ac.za/hpc}, as well as
+and the Tsessebe cluster at the Centre for High Performance Computing, Cape Town.}  %: \url{http://www.chpc.ac.za/}.}
+M.\,K.\ acknowledges financial support by the National Research Foundation of South Africa via the Incentive Funding and the Competitive Programme for Rated Researchers.
 
-%Acknowledge data from J.~ Schachenmayer and J.J.~Bollinger.
-
-M.\,K.\ acknowledges financial support by the National Research Foundation of South Africa via the Incentive Funding and the Competitive Programme for Rated Researchers. \ar{ A.\,R.\ acknowledges Prof. Lea F. dos Santos of the Department of Physics, Stern College for Women, Yeshiva University, as well as Dr. Johannes Schachenmayer of the JILA group at the University of Colorado, Boulder, for useful discussions. A.\,R.\ also acknowledges the computational resources provided by the University of Stellenbosch's Rhasatsha HPC: \url{http://www.sun.ac.za/hpc}, as well as the Tsessebe cluster at the Centre for High Performance Computing, Cape Town: \url{http://www.chpc.ac.za/}.}
-
-
-\bibliography{LRLR}
+%\bibliography{LRLR}
+\putbib
+\end{bibunit}
+\clearpage
 
 \bigskip
 
 \newpage
-%\hbox{}
-%\newpage
+\hbox{}
+\newpage
 
 \begin{center}
 {\bf Supplemental Material}  
@@ -234,7 +256,7 @@ M.\,K.\ acknowledges financial support by the National Research Foundation of So
 \numberwithin{equation}{section}
 \numberwithin{figure}{section}
 
-
+\begin{bibunit}
 \section{A. Phase space sampling schemes}
 \setcounter{section}{1}
 \setcounter{equation}{0}
@@ -290,7 +312,7 @@ and
 \tilde{\mvec{r}}_{(1,1)}&=(-1,0,-1).\label{e:rt4}
 \end{align}
 \end{subequations}
-While the new phase point operators $\tilde{A}_\alpha$ are equivalent to the old ones in being just simple linear combinations, the different choices are crucially different at later times due to the \ar{nonlinearity of the equations}\marginpar{\ar{\tiny{Maybe move this text to the beginning of para 2, or mention it there separately.}}} \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} under which the classical spin vectors \eqref{e:rt1}--\eqref{e:rt4} evolve in time.
+While the new phase point operators $\tilde{A}_\alpha$ are equivalent to the old ones in being just simple linear combinations, the different choices are crucially different at later times due to the nonlinearity of the equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} under which the classical spin vectors \eqref{e:rt1}--\eqref{e:rt4} evolve in time.
 
 Out of the many possible choices of sampling schemes, we have experimented, always for $\rho_0 = (\id+\sigma^x)/2$, with the following sets of vectors to define the phase space operators,
 \begin{subequations}
@@ -304,12 +326,12 @@ where
 \begin{equation}
 \tilde{\mvec{r}}_{(0,0)}^\prime=(1,1,0),\qquad \tilde{\mvec{r}}_{(1,0)}^\prime=(1,-1,0).
 \end{equation}
-Numerical results obtained with $S_{\text{1-1}}$, $S_{\text{0-1}}$, and $S_{\text{all}}$ start to differ from each other after some time, as illustrated in Fig.~\ref{f:sampling}. Whether one choice or the other performs better depends on the model studied. Fig.~\ref{f:sampling_2} shows that the sampling scheme performing better does not change by taking different sizes or different $\alpha$'s for the models taken into account\marginpar{\ar{\tiny{Maybe mention here that we can compare with ED for small system sizes to optimize the sampling scheme.}}}. Understanding this dependence, and therefore being able to choose the optimal sampling for a given problem, is an interesting open problem.
+Numerical results obtained with $S_{\text{1-1}}$, $S_{\text{0-1}}$, and $S_{\text{all}}$ start to differ from each other after some time, as illustrated in Fig.~\ref{f:sampling}. To understand which of the sampling schemes performs better for a given problem, we analyze the accuracy of the results for different parameter values. As illustrated in Fig.~\ref{f:sampling_2}, it depends on the model, but only on the model, which of the sampling schemes performs better. For the $XX$ chain, we find that the $S_{\text{0-1}}$ sampling gives the best results for all system sizes studied. For the Ising chain in a transverse field, the $S_{\text{all}}$ sampling scheme performs best for various long-range exponents $\alpha$. This observation provides us with a method of how to choose a suitable sampling scheme for a given model. We can perform simulations for small system sizes where exact results for comparison are available, identify which sampling scheme works best for a given type of Hamiltonian, and then apply this optimal scheme to larger system sizes. For further improvement, however, a deeper theoretical understanding, and therefore being able to {\em a priori}\/ choose the optimal sampling for a given problem, would be desirable.
 
 \begin{figure}\centering
 \includegraphics[width=\linewidth]{./XY_TF_compare_samplings.jpg}
 \caption{\label{f:sampling}%
-Comparison of the different sampling schemes $S_{\text{1-1}}$ (blue), $S_{\text{0-1}}$ (red), and $S_{\text{all}}$ (green) as defined in \eqref{e:S11}--\eqref{e:Sall}, and method of SPR (blue dots). Sample sizes are $n=10^5$ in all cases. Left: Time evolution of the decibel spin squeezing for an $XX$ chain of 100 sites and long-range exponent $\alpha=3$. DMRG results are shown in black. Right: Total correlations $C^{yy}=\sum_{i,j}\left\{\sigma_i^y,\sigma_j^y\right\}/2$ of an Ising chain of 11 sites in a transverse field $\mvec{h}=(1,0,0)$ with long-range exponent $\alpha=1/2$. Results obtained by exact diagonalization are shown in black.
+Comparison of the different sampling schemes $S_{\text{1-1}}$ (blue), $S_{\text{0-1}}$ (red), and $S_{\text{all}}$ (green) as defined in \eqref{e:S11}--\eqref{e:Sall}, and the method of SPR (blue dots). \mk{In the left plot, one can hardly see which are the dots. Can you make a plot with fewer dots?} Sample sizes are $n=10^5$ in all cases. Left: Time evolution of the decibel spin squeezing for an $XX$ chain of 100 sites and long-range exponent $\alpha=3$. DMRG results are shown in black. Right: Total correlations $C^{yy}=\sum_{i,j}\left\{\sigma_i^y,\sigma_j^y\right\}/2$ of an Ising chain of 11 sites in a transverse field $\mvec{h}=(1,0,0)$ with long-range exponent $\alpha=1/2$. Results obtained by exact diagonalization are shown in black.
 }%
 \end{figure}
 
@@ -331,7 +353,8 @@ Starting from the Liouville-von Neumann equation \eqref{VNeqdWA} with the genera
 \begin{subequations}
 \begin{align}
 \ii\partial_t \mathscr{A}_i=&\Com{H_i}{\mathscr{A}_i}+\sum_{k\neq i}\Tr\Com{H_{ik}}{\mathscr{A}_{ik}}\label{e:1st_order_app1}\\
-\ii\partial_t \mathscr{A}_{ij}=&\Com{H_i+H_j+H_{ij}}{\mathscr{A}_{ij}}+\sum_{k\neq i,j}\Tr_k\Com{H_{ik}+H_{jk}}{\mathscr{A}_{ijk}}
+\ii\partial_t \mathscr{A}_{ij}=&\Com{H_i+H_j+H_{ij}}{\mathscr{A}_{ij}}\nonumber\\
+&+\sum_{k\neq i,j}\Tr_k\Com{H_{ik}+H_{jk}}{\mathscr{A}_{ijk}}
 \label{e:2nd_order_app1}
 \end{align}
 \end{subequations}
@@ -351,19 +374,21 @@ Neglecting the 3-spin correlations $\mathscr{C}_{ijk}$, the first two equations 
 \begin{equation}
 H=-\sum_{\mu\in\{x,y,z\}}\sum_{i\neq j}J_{ij}^\mu\sigma_i^\mu\sigma_j^\mu - \mvec{h}\cdot\sum_i\mvec{\sigma}_i
 \end{equation}
-Inserting the representations into the truncated BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, one makes use of the orthogonality of the Pauli operators to calculate, by methods similar to the Appendix of Ref.~\cite{PaskauskasKastner12}, the following time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ for all $i,j=1,\dotsc,N$ and $\mu,\nu\in\{x,y,z\}$.
-\begin{widetext}
+Inserting the representations into the truncated BBGKY equations \eqref{e:1st_order} and \eqref{e:2nd_order}, one makes use of the orthogonality of the Pauli operators to calculate, by methods similar to the Appendix of Ref.~\cite{PaskauskasKastner12}, the following time evolution equations for the expansion coefficients $a_i^\mu$ and $c_{ij}^{\mu\nu}$ for all $i,j=1,\dotsc,N$ and $\mu,\nu\in\{x,y,z\}$,
 \begin{subequations}
+\begin{equation}
+ \frac{1}{2}\partial_t a_i^\mu=-\sum_{\beta\gamma}\biggl[\biggl(h^\beta+\sum_{k\neq i}J_{ik}^\beta a_k^\beta\biggr)a_i^\gamma+\sum_{k\neq i}J_{ik}^\beta c_{ki}^{\beta\gamma}\biggr]\varepsilon^{\mu \beta\gamma},\label{e:1st_order_param}
+\end{equation}
+\begin{widetext}
 \begin{align}
- \frac{1}{2}\partial_t a_i^\mu=&-\sum_{\beta\gamma}\left[\left(h^\beta+\sum_{k\neq i}J_{ik}^\beta a_k^\beta\right)a_i^\gamma+\sum_{k\neq i}J_{ik}^\beta c_{ki}^{\beta\gamma}\right]\varepsilon^{\mu \beta\gamma}\label{e:1st_order_param}\\
 \frac{1}{2}\partial_t c_{ij}^{\mu\nu}=&-\sum_{\beta}(J_{ij}^\nu a_i^\beta-J_{ij}^\mu a_j^\beta)\varepsilon^{\mu\nu\beta}\nonumber\\
- &-\sum_{\beta,\gamma}\left[\left(h^\beta+\sum_{k\neq i,j}J_{ik}^\beta a_k^\beta\right)c_{ij}^{\gamma\nu}\varepsilon^{\beta \gamma\mu}+\left(h^\beta+\sum_{k\neq i,j}J_{jk}^\beta a_k^\beta\right) c_{ij}^{\mu \gamma}\varepsilon^{\beta \gamma\nu}\right]\nonumber\\
+ &-\sum_{\beta,\gamma}\biggl[\biggl(h^\beta+\sum_{k\neq i,j}J_{ik}^\beta a_k^\beta\biggr)c_{ij}^{\gamma\nu}\varepsilon^{\beta \gamma\mu}+\biggl(h^\beta+\sum_{k\neq i,j}J_{jk}^\beta a_k^\beta\biggr) c_{ij}^{\mu \gamma}\varepsilon^{\beta \gamma\nu}\biggr]\nonumber\\
  &-\sum_{\beta,\gamma}\sum_{k\neq i,j}\left[J_{ik}^\beta a_i^\gamma c_{jk}^{\nu\beta}\varepsilon^{\beta \gamma\mu}+J_{jk}^\beta a_j^\gamma c_{ik}^{\mu\beta}\varepsilon^{\beta \gamma\nu}\right]\nonumber\\
  &+\sum_{\beta,\gamma}J_{ij}^\beta \left[a_i^\mu(c_{ij}^{\beta \gamma}+a_i^\beta a_j^\gamma)\varepsilon^{\beta \gamma b}+a_j^\nu(c_{ij}^{\gamma\beta}+a_i^\gamma a_j^\beta)\varepsilon^{\beta \gamma a}\right].
 \label{e:2nd_order_param}
  \end{align}
+\end{widetext}
 \end{subequations}
- \end{widetext}
 
 
 
@@ -401,7 +426,7 @@ when using \eqref{e:corr1}, or
 \left\langle C^{\mu\nu}\right\rangle= N\delta_{\mu,\nu} + \sum_{\mvec{\alpha}\in\Gamma^N}w_{\alpha_1}\cdots w_{\alpha_N}\sum_{i\neq j}\left(a_i^\mu a_j^\nu + c_{ij}^{\mu\nu}\right)\label{e:C_PRK}
 \end{equation}
 \end{subequations}
-when starting from \eqref{e:corr2}. The choice in \eqref{e:C_SPR} amounts to approximating the expectation value of the identity operator by a value different from 1. We have opted for \eqref{e:C_PRK} in our method, and we have verified that this choice gives better results. Schachenmayer {\em et al.} in \cite{Schachenmayer_etal15} used \eqref{e:C_SPR}. We have tested that, in their method, independently of whether \eqref{e:C_SPR} or \eqref{e:C_PRK} is used, deviations from the exact result become visible at around similar times. However, miraculously, for the method of SPR, qualitative agreement between exact and approximate results can be better with \eqref{e:C_SPR}, and we used this definition when comparing their method to ours. Since our method yields more accurate results than SPR in all cases, we advocate the use of \eqref{e:C_PRK} in general.
+when starting from \eqref{e:corr2}. The choice in \eqref{e:C_SPR} amounts to approximating the expectation value of the identity operator by a value different from 1. We have opted for \eqref{e:C_PRK} in our method, and we have verified that this choice gives better results. Schachenmayer {\em et al.} in \cite{Schachenmayer_etal15} used \eqref{e:C_SPR}. We have tested that, in their method, independently of whether \eqref{e:C_SPR} or \eqref{e:C_PRK} is used, deviations from the exact result become visible at around similar times. \ar{However, for the method of SPR, qualitative agreement between exact and approximate results can be remarkably better with} \eqref{e:C_SPR}, and we used this definition when comparing their method to ours. Since our method yields more accurate results than SPR in all cases, we advocate the use of \eqref{e:C_PRK} in general.
 
 \section{D. Exact Ising results}
 \setcounter{section}{4}
@@ -413,122 +438,156 @@ For the quantum Ising model with a longitudinal magnetic field and arbitrary cou
 H=-\sum_{i\neq j}J_{ij}\sigma_i^z\sigma_j^z - h\sum_i\sigma_i^z,
 \end{equation}
 we show that the middle equation in \eqref{e:2spin}, evaluated by making use of the truncated time evolution equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param}, agrees with the exact analytic solution of the Ising model. As a consequence, the estimate on the right-hand side of \eqref{e:2spin} becomes exact in the limit of large sample size.
-In the following derivation we put for brevity $h=0$, but results are analogous and exact solutions are recovered also in presence of a longitudinal field.
+For simplicity we set $h=0$ in the following, but an analogous calculation can be performed for nonzero magnetic field, recovering the exact solution also in this case.
 
-When using the sampling $S_{\text{1-1}}$ the system of equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} reduces to
+When using the sampling $S_{\text{1-1}}$ defined in \eqref{e:S11}, the system of equations \eqref{e:1st_order_param}--\eqref{e:2nd_order_param} reduces to
 \begin{subequations}
-\begin{align}
- \partial_t a_i^x=&2a_i^y\beta_i\nonumber\\
- \partial_t a_i^y=&-2a_i^x\beta_i\\
- \partial_t c_{ij}^{xy}=&2\beta_{i-j}c_{ij}^{yy}-2\beta_{j-i}c_{ij}^{xx}-2J_{ij}(a_j^za_i^ya_j^y-a_i^za_i^xa_j^x)\nonumber\\
- \partial_t c_{ij}^{yx}=&2\beta_{j-i}c_{ij}^{yy}-2\beta_{i-j}c_{ij}^{xx}-2J_{ij}(a_i^za_i^ya_j^y-a_j^za_i^xa_j^x)\nonumber\\
- \partial_t c_{ij}^{xx}=&2\beta_{i-j}c_{ij}^{yx}+2\beta_{j-i}c_{ij}^{xy}-2J_{ij}(a_j^za_i^ya_j^x+a_i^za_i^xa_j^y)\nonumber\\
- \partial_t c_{ij}^{yy}=&-2\beta_{i-j}c_{ij}^{xy}-2\beta_{j-i}c_{ij}^{yx}+2J_{ij}(a_j^za_i^ya_j^x+a_i^za_i^ya_j^x)\label{corr_Ising}
-\end{align}
+\begin{equation}
+\begin{split}
+ \partial_t a_i^x=&2a_i^y\beta_i\\
+ \partial_t a_i^y=&-2a_i^x\beta_i
+\end{split}
+\end{equation}
+and
+\begin{equation}\label{corr_Ising}
+\begin{split}
+ \partial_t c_{ij}^{xy}=&2\beta_{i-j}c_{ij}^{yy}-2\beta_{j-i}c_{ij}^{xx}-2J_{ij}(a_j^za_i^ya_j^y-a_i^za_i^xa_j^x)\\
+ \partial_t c_{ij}^{yx}=&2\beta_{j-i}c_{ij}^{yy}-2\beta_{i-j}c_{ij}^{xx}-2J_{ij}(a_i^za_i^ya_j^y-a_j^za_i^xa_j^x)\\
+ \partial_t c_{ij}^{xx}=&2\beta_{i-j}c_{ij}^{yx}+2\beta_{j-i}c_{ij}^{xy}-2J_{ij}(a_j^za_i^ya_j^x+a_i^za_i^xa_j^y)\\
+ \partial_t c_{ij}^{yy}=&-2\beta_{i-j}c_{ij}^{xy}-2\beta_{j-i}c_{ij}^{yx}+2J_{ij}(a_j^za_i^ya_j^x+a_i^za_i^ya_j^x)
+\end{split}
+\end{equation}
 \end{subequations}
-where we introduced the constants $\beta_{i}=\sum_{k\neq i} J_{ik} a_k^z(0)$ and $\beta_{i-j}=\sum_{k\neq i,j} J_{ik} a_k^z(0)$.
-The $a_i^z$'s do not change in time and $c_{ij}^{xz}$, $c_{ij}^{yz}$ and $c_{ij}^{zz}$ remain zero for any $i$ and $j$.
-Quantities $a_i^x$ and $a_i^y$ evolve independently from the $c$'s as 
+where we introduced the constants
+\begin{equation}
+\beta_{i}=\sum_{k\neq i} J_{ik} a_k^z(0),\qquad \beta_{i-j}=\sum_{k\neq i,j} J_{ik} a_k^z(0).
+\end{equation}
+The $a_i^z$ do not change in time, and $c_{ij}^{xz}$, $c_{ij}^{yz}$, and $c_{ij}^{zz}$ remain zero for all times.
+The quantities $a_i^x$ and $a_i^y$ evolve independently from all $c_{ij}$, 
+\pagebreak
 \begin{subequations}
 \begin{align}
-a_i^x(t)=&a_i^x(0)\cos(2t\beta_i)+a_i^y(0)\sin(2t\beta_i)\nonumber\\
+a_i^x(t)=&a_i^x(0)\cos(2t\beta_i)+a_i^y(0)\sin(2t\beta_i),\\
 a_i^y(t)=&a_i^y(0)\cos(2t\beta_i)-a_i^x(0)\sin(2t\beta_i),
 \end{align}
-where $a_i^x(0)=1$, while they affect the evolution of the $c$'s. 
 \end{subequations}
-Eq. \eqref{e:2nd_order_param} relates linearly only $c_{ij}^{xx}$, $c_{ij}^{yy}$, $c_{ij}^{xy}$ and $c_{ij}^{yx}$ associated to the same couple of particles $i$ and $j$, so for each of them we solve independently the
-same set of differential equations. By putting Eqs. \eqref{corr_Ising} in the form
+where $a_i^x(0)=1$. %, while they affect the evolution of the $c$'s. 
+The equations in \eqref{corr_Ising} are local in the sense that they relate only quantities with the same indices $i$ and $j$. We can rewrite these equations in matrix form,
 \begin{subequations}
+\begin{equation}
+ \partial_t\mvec{c_{ij}}=M_{ij}\mvec{c}_{ij}+\mvec{f}_{ij}(t)\\
+\end{equation}
+with
 \begin{align}
- &\partial_t\mvec{c_{ij}}=M_{ij}\mvec{c_{ij}}+\mvec{f_{ij}}(t)\\
- &\mvec{c_{ij}}^T=(c_{ij}^{xy},c_{ij}^{yx},c_{ij}^{xx},c_{ij}^{yy})\nonumber\\
- &M_{ij}=\left(\begin{array}{c c c c}
+ \mvec{c}_{ij}^T&=\left(c_{ij}^{xy},c_{ij}^{yx},c_{ij}^{xx},c_{ij}^{yy}\right),\\
+ M_{ij}&=\begin{pmatrix}
    0 & 0 & -\beta_{j-i} & \beta_{i-j}\\
    0 & 0 & -\beta_{i-j} & \beta_{j-i}\\
    \beta_{j-i} & \beta_{i-j} & 0 & 0 \\
    -\beta_{i-j} & -\beta_{j-i} & 0 & 0 
-  \end{array}\right)\nonumber\\
- &\mvec{f_{ij}}=2J_{ij}\left(\begin{array}{c}
-                      a_i^za_i^xa_j^x-a_j^za_i^ya_j^y\\
-                      -a_i^za_i^ya_j^y+a_j^za_i^xa_j^x\\
-                      -a_i^za_i^xa_j^y-a_j^za_i^ya_j^x\\
-                      a_i^za_i^ya_j^x+a_j^za_i^ya_j^x
-                      \end{array}
- \right)\nonumber
+  \end{pmatrix},\\
+ \mvec{f}_{ij}(t)&=2J_{ij}\begin{pmatrix}
+                      a_i^z(t)a_i^x(t)a_j^x(t)-a_j^z(t)a_i^y(t)a_j^y(t)\\
+                      -a_i^z(t)a_i^y(t)a_j^y(t)+a_j^z(t)a_i^x(t)a_j^x(t)\\
+                      -a_i^z(t)a_i^x(t)a_j^y(t)-a_j^z(t)a_i^y(t)a_j^x(t)\\
+                      a_i^z(t)a_i^y(t)a_j^x(t)+a_j^z(t)a_i^y(t)a_j^x(t)
+                      \end{pmatrix}.
 \end{align}
 \end{subequations}
-and expressing $\mvec{f_{ij}}$ in terms of the four eigenvectors $\mvec{v_{ij}}$ of the matrix $M$
-\begin{subequations}
+Expressing $\mvec{f_{ij}}$ in terms of the four eigenvectors
 \begin{align}
- \mvec{v_1}=\left(\begin{array}{c}
+ \mvec{v_1}=\begin{pmatrix}
                         \ii\\
                         \ii\\
                         -1\\
                         1
-                       \end{array}\right),
- \mvec{v_2}=\left(\begin{array}{c}
+                       \end{pmatrix},\;
+ \mvec{v_2}=\begin{pmatrix}
                         -\ii\\
                         \ii\\
                         1\\
                         1
-                       \end{array}\right),
- \mvec{v_3}=(\mvec{v_{ij}^2})^*,
+                       \end{pmatrix},\;
+ \mvec{v_3}=(\mvec{v_{ij}^2})^*,\;
  \mvec{v_4}=(\mvec{v_{ij}^1})^*
 \end{align}
-\end{subequations}
-with corresponding eigenvalues
-\begin{subequations}
-\begin{align}
-&\mvec{\lambda_{ij}}^T=(\lambda_{ij}^1,\lambda_{ij}^2,(\lambda_{ij}^2)^*,(\lambda_{ij}^1)^*),
-\end{align}
-\end{subequations}
-where $\lambda_{ij}^1=-2\ii (\beta_{i-j}+\beta_{j-i})$ and $\lambda_{ij}^2=2\ii (\beta_{i-j}-\beta_{j-i})$,
-we get the solution
+of $M$ with corresponding eigenvalues $\lambda_{ij}^1$, $\lambda_{ij}^2$, $(\lambda_{ij}^2)^*$, and $(\lambda_{ij}^1)^*$,
+where
+\begin{equation}
+\lambda_{ij}^1=-2\ii (\beta_{i-j}+\beta_{j-i}),\qquad \lambda_{ij}^2=2\ii (\beta_{i-j}-\beta_{j-i}),
+\end{equation}
+we obtain the solution
 \begin{widetext}
 \begin{subequations}
-\begin{align}
- \mvec{c_{ij}}(t)=&\int_0^t d\tau e^{M(t-\tau)}\mvec{f_{ij}}(\tau)\\
-=&\frac{1}{4}\left\lbrace \ii\left[e^{-2\ii (\beta_{i-j}+\beta_{j-i})t}e^{-2\ii J_{ij}(a_i^z+a_j^z)-e^{-2\ii (\beta_{i-j}+\beta_{j-i})t}}\right]\left[\ii (a_i^y(0)a_j^y(0)-1)+(a_i^y(0)+a_j^y(0))\right]\mvec{v_1}\right.\nonumber\\
- &\left. \ii \left[e^{2\ii (\beta_{i-j}-\beta_{j-i})t}e^{2\ii J_{ij}(a_j^z-a_i^z)-e^{2\ii (\beta_{i-j}-\beta_{j-i})t}}\right]\left[\ii (a_i^y(0)a_j^y(0)+1)+(a_i^y(0)-a_j^y(0))\right]\mvec{v_2}+c.c.\right\rbrace.
-\end{align}
+\begin{equation}
+\begin{split}
+ \mvec{c_{ij}}(t)=&\int_0^t \dd\tau\, \ee^{M(t-\tau)}\mvec{f_{ij}}(\tau)\\
+=&\frac{\ii}{4}\left[\ee^{-2\ii (\beta_{i-j}+\beta_{j-i})t}\ee^{-2\ii J_{ij}(a_i^z+a_j^z)t}-\ee^{-2\ii (\beta_{i-j}+\beta_{j-i})t}\right]\left[\ii (a_i^y(0)a_j^y(0)-1)+(a_i^y(0)+a_j^y(0))\right]\mvec{v_1}\\
+ &+\frac{\ii}{4} \left[\ee^{2\ii (\beta_{i-j}-\beta_{j-i})t}\ee^{2\ii J_{ij}(a_j^z-a_i^z)t}-\ee^{2\ii (\beta_{i-j}-\beta_{j-i})t}\right]\left[\ii (a_i^y(0)a_j^y(0)+1)+(a_i^y(0)-a_j^y(0))\right]\mvec{v_2}+\text{c.c.}
+\end{split}
+\end{equation}
 \end{subequations}
-\end{widetext}
-We compute now the quantities $C_{ij}^{xy}$, $C_{ij}^{xx}$ and $C_{ij}^{yy}$ according to Eq. \eqref{e:2spin}. By summing over the possible initial conditions for particles $i$ and $j$ given by the sampling scheme $S_{\text{1-1}}$ we get
-\begin{widetext}
+Next we compute the correlation functions according to the right-hand side of \eqref{e:2spin}, i.e., from an infinite sample of initial states drawn according to the sampling scheme $S_{\text{1-1}}$ defined in \eqref{e:S11}. As a first step, we sum only over the possible initial values, as given by that sampling, of the $a(0)$ components at lattice sites $i$ and $j$, yielding
 \begin{subequations}
 \begin{align}
- &\frac{1}{16}\sum_{a_i^z,a_i^y(0),a_j^z,a_j^y(0)}\mvec{c_{ij}}(t)=
- \frac{1}{2}(\cos^2(2J_{ij}t)-1)\left(\begin{array}{c}
+ &\frac{1}{16}\sum_{a_i^z,a_i^y,a_j^z,a_j^y\in S_{\text{1-1}}}\mvec{c_{ij}}(t)=
+ \frac{1}{2}\left[\cos^2(2J_{ij}t)-1\right]\begin{pmatrix}
         \sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
         \sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]+\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
         -\cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
-        \cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right].
-       \end{array}
- \right)\\
- &\frac{1}{16}\sum_{a_i^z,a_i^y(0),a_j^z,a_j^y(0)}
- \left(\begin{array}{c}
- a_i^xa_j^y\\
- a_i^xa_j^y\\
- a_i^xa_j^y\\
- a_i^xa_j^y
- \end{array}\right)
+        \cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]
+       \end{pmatrix},\\
+ &\frac{1}{16}\sum_{a_i^z,a_i^y,a_j^z,a_j^y\in S_{\text{1-1}}}
+ \begin{pmatrix}
+ a_i^x(t)a_j^y(t)\\
+ a_i^x(t)a_j^y(t)\\
+ a_i^x(t)a_j^y(t)\\
+ a_i^x(t)a_j^y(t)
+ \end{pmatrix}
 =
- -\frac{1}{2}\cos^2(2J_{ij}t)\left(\begin{array}{c}
+ -\frac{1}{2}\cos^2(2J_{ij}t)\begin{pmatrix}
         \sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
         \sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]+\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
         -\cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
-        \cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right].
-       \end{array}
- \right),
+        \cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]
+       \end{pmatrix}.
 \end{align}
 \end{subequations}
 \end{widetext}
-The terms proportional to $\cos^2(2J_{ij}t)$ cancel out and the exact analytical expression for the two-point quantities is obtained
-by summing over all the remaining $a_k^z$'s, with $k\neq i,j$, which are contained in $\beta_{i-j}$ and $\beta_{j-i}$.
-While for the one-point quantities, $c_{ij}^{xz}$ and $c_{ij}^{yz}$ we recover the solution given by SPR,
- our method enables to get an exact description also for the other correlations.
+Here we identified $a_i^\mu\equiv a_i^\mu(0)$, i.e., $a$-coefficients without a time argument denote initial values. (Note that the coefficients $\beta_{i-j}$ and $\beta_{j-i}$ depend on $a_k^z$.) The terms proportional to $\cos^2(2J_{ij}t)$ cancel out and the exact analytical expression for the two-point quantities \mk{that was found in}\cite{vdWorm_etal13} is obtained by summing over all the remaining $a_k^z$ with $k\neq i,j$,
+\begin{widetext}
+\begin{subequations}
+\begin{align}
+\begin{pmatrix}
+        \left\langle\sigma_i^x\sigma_j^y\right\rangle(t)\\
+        \left\langle\sigma_i^y\sigma_j^x\right\rangle(t)\\
+        \left\langle\sigma_i^x\sigma_j^x\right\rangle(t)\\
+        \left\langle\sigma_i^y\sigma_j^y\right\rangle(t)
+       \end{pmatrix}    
+ =\frac{1}{2\times4^{N-2}}\sum_{\{a_k^z,a_k^y\}\in S_{\text{1-1}},k\neq i,j}
+\begin{pmatrix}
+        -\sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]+\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
+        -\sin\left[2(\beta_{i-j}+\beta_{j-i})t\right]-\sin\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
+        \cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]+\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]\\
+        -\cos\left[2(\beta_{i-j}+\beta_{j-i})t\right]+\cos\left[2(\beta_{i-j}-\beta_{j-i})t\right]
+       \end{pmatrix}
+ =
+ \begin{pmatrix}
+        0\\
+        0\\
+        P_{ij}^-+P_{ij}^+\\
+        P_{ij}^--P_{ij}^+
+       \end{pmatrix}
+\end{align}
+\end{subequations}
+\end{widetext}
+with
+\begin{equation}
+P_{ij}^\pm=\frac{1}{2}\prod_{k\neq i,j}\cos\left[2(J_{ki}\pm J_{kj})t\right] 
+\end{equation}
+\ar{In summary, we recover for the Ising model the exact analytic solution for all one-point and two-point functions from the truncated time evolution equations} \eqref{e:1st_order_param}--\eqref{e:2nd_order_param}. This is a significant improvement compared to the method in \cite{Schachenmayer_etal15}. \ar{Shouldn't we have a separate bibliography for the supplemental material?}
 
 %\bibliography{LRLR}
-
-
+\putbib
+\end{bibunit}
 \end{document}
