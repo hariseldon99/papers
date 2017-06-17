@@ -1,0 +1,54 @@
+% Use class option [extendedabs] to prepare the 1-page extended abstract.
+\documentclass[extendedabs]{bmvc2k}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+\usepackage{bm}
+% Document starts here
+\begin{document}
+
+
+\title{Many Body Quantum Kinetics in the Phase Space:\\
+Simulating spin dynamics by the BBGKY trajectories of sampled phase points}
+\addauthor{
+Analabha Roy$^1$,$^2$
+}{}{1}
+\addinstitution{
+$^1$National Institute for Theoretical Physics, Stellenbosch University, Stellenbosch $7600$, South Africa \\ 
+$^2$Department of Physics, The University of Burdwan, Barddhaman $713104$, India
+}
+ 
+ 
+\maketitle
+
+
+
+% Extended abstract begins here.  In a one-page document, there is
+% little need for section headers, but you may use \section etc if you
+% wish.
+
+\noindent
+A novel method for simulating the quantum many body dynamics of discrete spins is presented. This method extends the Truncated Wigner Approximation in the phase space
+spanned by discrete spin eigenvalues with the quantum kinetics of $2$- point correlations obtained from the Bogoliubov-Born-Green-Kirkwood-Yvon (BBGKY) hierarchy. Going to higher orders of the BBGKY hierarchy allows for a systematic refinement of the method. Quantum correlations are treated through both, the Wigner function sampling and the BBGKY evolution. Thus, the method is highly accurate for long times, and is especially well suited for long range interactions, higher dimensional problems, and strongly correlated systems. The efficacy of this method is demonstrated by comparing with exact results as well as methods involving Matrix Product States. Current applications of this method involve the  computation of spin-squeezing in a two-dimensional lattice with power-law interactions and a transverse field, as well as a simulation of  photon-mediated co-operative effects in the quantum dynamics of a large cloud of atoms.
+
+In the Truncated Wigner Approximation (TWA), the exact dynamics of a quantum system with Hamiltonian $\hat{H}$ and density operator $\hat{\rho}$ is written in the phase space spanned by $(q,p)$, the eigenvalues of the canonically conjugate position-momentum operators $(\hat{q},\hat{p})$, as
+\begin{equation}
+\label{eq:twa}
+\partial_t W(q,p) = i \bigg\{W(q,p),H_C(q,p)\bigg\}_{M.B}.
+\end{equation}
+Here, the Wigner function $W(q,p)$ is defined as the Weyl symbol of the density matrix, \textit{viz.}, $W(q,p) \equiv \rm{Tr}\left\{\hat{\rho} \exp{\left[i\left(p\hat{q}-q\hat{p}\right) \right]}\right\}$, the Moyal Bracket on the RHS of eqn~\ref{eq:twa} is defined as $\left\{W(q,p),H_C(q,p)\right\}_{M.B}\equiv W(q,p)\{2\sin[\overleftarrow{\partial_p}\overrightarrow{\partial_q}$
+$-\overleftarrow{\partial_q}\overrightarrow{\partial_p}]\}H_C(q,p)$, and $H_C$, the Weyl symbol of the Hamiltonian, is just the classical Hamiltonian in the phase space, provided that the quantum Hamiltonian is normal-ordered in $(\hat{q},\hat{p})$. The TWA involves truncating the Moyal Bracket expansion of the $\sin$-term in eqn~\ref{eq:twa} to the lowest order, yielding the Poisson bracket, \textit{i.e.}, the classical dynamics of the Wigner function $W(q,p)$. This dynamics is simulated by a Monte-Carlo sampling of the phase points, biased by the quasi-probability distribution $W(q,p)$. The dynamics of an observable $\hat{\Omega}$ is approximated from that of its classically evolving Weyl symbol in the TWA, averaged over all chosen sample points.
+
+The TWA can be discretized to simulate the dynamics of spin-$1/2$ particles. In the Discrete Truncated Wigner Approximation (DTWA), phase-point operators $\hat{A}_\alpha\equiv \frac{1}{2}(1+\bm{r}_\alpha\cdot\bm{\sigma})$ can be defined for $4$ discrete phase points (indexed by $\alpha$) for each spin. Here, the choice of $3-$vectors $\bm{r}_\alpha$ denotes a particular sampling scheme, and the choices are made so as to satisfy projection properties that are analogous to those of the operators $\exp{\left[i\left(p\hat{q}-q\hat{p}\right)\right]}$ in the continuous TWA. Also, $\bm{\sigma}\equiv(\sigma_x, \sigma_y,\sigma_z)$, the unit vector of Pauli matrices. The discrete Wigner function is defined for each spin as a collection of $4$ values  $w_\alpha\equiv \rm{Tr}[\hat{\rho} \hat{A}_{\alpha}]$ for each single-spin phase point $\alpha$. If the initial many body state in an $N-$spin system is an un-entangled product state, then the discrete Wigner function of the full system can be written as a product of $w_\alpha$s for each spin, allowing for the expansion of the full many body density operator
+\begin{equation}
+\hat{\rho}_0\equiv \hat{\rho}(t=0) = \displaystyle\sum_{\alpha_1,\dots,\alpha_N} w_{\alpha_1}\dots w_{\alpha_N}\; \hat{A}_{\alpha_1}\otimes \dots \otimes \hat{A}_{\alpha_N}.
+\end{equation}
+Here, $\hat{A}_{\alpha_1}\otimes \dots \otimes \hat{A}_{\alpha_N} = \mathcal{A}^{\alpha_1\dots\alpha_N}(t=0)$, is a single many-body phase point constructed from the individual sampled phase points $\alpha_1\dots\alpha_N$. The full many body dynamics of the system can be formulated from the exact dynamics of all phase point operators $\mathcal{A}^{\alpha_1\dots\alpha_N}(t)$. This is approximated by a finite sample of $n_t$ phase points (biased by the quasi-probabilities $w_\alpha$), followed by the classical evolution of the spins $s_i$ using the classical spin Hamiltonian $H_c$, the Weyl transform of the quantum spin Hamiltonian.
+
+Comparison of the DTWA with exact and MPS-DMRG solutions for long range spin systems have yielded relatively good results for single spin observables, but poor results for $2-$spin correlations at long times.
+
+\bibliography{egbib}
+
+\end{document}
