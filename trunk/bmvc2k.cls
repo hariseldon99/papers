@@ -223,7 +223,7 @@
 
 \RequirePackage[T1]{fontenc}
 \RequirePackage{mathptmx}
-\RequirePackage{helvet,courier}
+\RequirePackage{helvet,courier,beramono}
 \DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -667,7 +667,7 @@
 % Natbib gives sorting of numeric references.
 % We don't use the compress option, because we
 % want each reference to have its own popup
-\usepackage[sort,numbers]{bmvc2k_natbib}
+\usepackage[sort, comma, numbers, super]{bmvc2k_natbib}
 
 % Compressed bibliography for the 1-pager
 \ifbmv@extabs
